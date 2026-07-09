@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Consult — Synora Digitals</title>
+<meta name="description" content="Book a free consultation with Synora Digitals. Tell us what eats your time — we'll map it, quote it, build it, and keep it running. Typical reply within 24 hours.">
+<meta name="robots" content="index, follow">
+<!-- placeholder domain — replace every synoradigitals.com URL once real hosting/domain is finalized -->
+<link rel="canonical" href="https://synoradigitals.com/consult.html">
+<meta name="theme-color" content="#d9d9d9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1e1e47" media="(prefers-color-scheme: dark)">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Synora Digitals">
+<meta property="og:title" content="Consult — Synora Digitals">
+<meta property="og:description" content="Book a free consultation with Synora Digitals. Tell us what eats your time — we'll map it, quote it, build it, and keep it running. Typical reply within 24 hours.">
+<meta property="og:url" content="https://synoradigitals.com/consult.html">
+<meta property="og:image" content="https://synoradigitals.com/assets/img/favicon.png">
+<meta property="og:image:width" content="238">
+<meta property="og:image:height" content="237">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Consult — Synora Digitals">
+<meta name="twitter:description" content="Book a free consultation with Synora Digitals. Tell us what eats your time — we'll map it, quote it, build it, and keep it running. Typical reply within 24 hours.">
+<meta name="twitter:image" content="https://synoradigitals.com/assets/img/favicon.png">
+
+<link rel="icon" href="assets/img/mini-logo-dark.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/favicon.png">
+<link rel="manifest" href="site.webmanifest">
+<link rel="preload" href="assets/fonts/Quera.otf"        as="font" type="font/otf" crossorigin="anonymous">
+<link rel="preload" href="assets/fonts/Arha Regular.otf" as="font" type="font/otf" crossorigin="anonymous">
+<link rel="stylesheet" href="shared.css">
+<script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-dark','');</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Synora Digitals",
+  "url": "https://synoradigitals.com/",
+  "logo": "https://synoradigitals.com/assets/img/logo-light.png",
+  "description": "AI automation studio building custom workflow automation for businesses.",
+  "foundingDate": "2026"
+}
+</script>
+
+<style>
+.page-card { min-height: calc(100vh - var(--nav-h)); min-height: calc(100svh - var(--nav-h)); }
+
+/* Form-specific type scale — same fixed-token approach as shared.css, kept
+   page-local since only this page has form fields. Radii are per the design
+   at icons/Full design additions/consult page/consult form design.svg. */
+:root {
+  --fs-form-label: max(15px, calc(1.35 * var(--u)));
+  --fs-form-input: max(16px, calc(1.5  * var(--u)));
+  --r-field:    999px;                           /* single-line inputs, phone badge, choose-a-file & submit buttons — all full pills */
+  --r-textarea: max(24px, calc(2.8 * var(--u))); /* message box — soft round, not a full pill */
+  --r-dropzone: max(30px, calc(3.6 * var(--u))); /* file drop-zone card */
+}
+@media (orientation: portrait), (max-width: 700px) {
+  :root {
+    --fs-form-label: max(13px, calc(3.4 * var(--u)));
+    --fs-form-input: max(15px, calc(4   * var(--u)));
+  }
+}
+
+/* ── CONSULTATION FORM (per icons/Full design additions/consult page) ──
+   Each field's name + required/optional marker live inside the placeholder
+   itself, not a separate <label> row — aria-label supplies the accessible
+   name since a placeholder alone isn't one. */
+.cform {
+  max-width: calc(72 * var(--u)); min-width: min(100%, 560px);
+  margin: 0 auto;
+  display: flex; flex-direction: column;
+  gap: max(18px, calc(1.9 * var(--u)));
+}
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: max(18px, calc(1.9 * var(--u))) }
+.cfield {
+  display: block; width: 100%; box-sizing: border-box;
+  background: var(--header-bg);
+  border: 1.5px solid transparent;
+  border-radius: var(--r-field);
+  padding: max(14px, calc(1.3 * var(--u))) max(22px, calc(2 * var(--u)));
+  font-family: 'Arha', sans-serif;
+  font-size: var(--fs-form-input);
+  color: var(--primary);
+  outline: none;
+  transition: border-color .25s, background .3s;
+}
+.cfield:focus { border-color: var(--phrase) }
+.cfield-area { border-radius: var(--r-textarea); resize: vertical; min-height: max(120px, calc(11 * var(--u))); }
+/* placeholders: quiet and smaller than the typed text — opacity dialed down
+   further than the color-mix alone (20% dimmer in light mode, 35% in dark,
+   since dark mode's mix reads relatively brighter against the darker input bg) */
+.cform ::placeholder { color: color-mix(in srgb, var(--muted) 42%, var(--header-bg)); opacity: .8; }
+[data-dark] .cform ::placeholder { opacity: .65; }
+
+/* phone row: one pill housing an inset country-code select + a plain input */
+.phone-field {
+  display: flex; align-items: center;
+  background: var(--header-bg);
+  border: 1.5px solid transparent;
+  border-radius: var(--r-field);
+  padding-right: max(20px, calc(1.8 * var(--u)));
+  transition: border-color .25s;
+}
+.phone-field:focus-within { border-color: var(--phrase) }
+.country-code {
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  background: var(--main-bg); color: var(--primary);
+  border: none; border-radius: 999px; cursor: pointer;
+  width: max(64px, calc(5.4 * var(--u))); height: max(56px, calc(4.6 * var(--u)));
+  margin: max(3px, calc(.25 * var(--u)));
+  font-family: 'Arha', sans-serif; font-size: var(--fs-form-label);
+  text-align: center; text-align-last: center;
+  outline: none; flex-shrink: 0;
+}
+.phone-input {
+  flex: 1; min-width: 0;
+  background: transparent; border: none; outline: none;
+  border-radius: 0 var(--r-field) var(--r-field) 0; /* it has no bg of its own normally, so this
+    only ever showed up as a bug: the browser's autofill forces its own opaque background on
+    recognized fields (name/email/phone), and without its own rounded corners that background
+    showed up as a square patch poking past the pill's rounded edge */
+  padding: max(14px, calc(1.3 * var(--u))) max(6px, calc(.6 * var(--u)));
+  font-family: 'Arha', sans-serif; font-size: var(--fs-form-input); color: var(--primary);
+}
+
+/* Neutralize the browser's forced autofill styling (Chrome etc. paint an
+   opaque background over author styles on autofilled fields) so it lands
+   on the same accent-purple "filled" look as the effect below, instead of
+   a jarring mismatched white/yellow patch — the -webkit-box-shadow inset
+   trick is the only reliable way to override it. */
+.cfield:-webkit-autofill, .cfield:-webkit-autofill:hover, .cfield:-webkit-autofill:focus,
+.phone-input:-webkit-autofill, .phone-input:-webkit-autofill:hover, .phone-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #eeeef0;
+  -webkit-box-shadow: 0 0 0 1000px var(--phrase) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ── FILLED-FIELD GLOW ──
+   Once a field actually has real content — :not(:placeholder-shown) needs
+   no JS since every field here already carries a placeholder — the pill
+   fills with the accent color and gets the same sweeping light as the
+   site's buttons (see shared.css's "UNIVERSAL BUTTON HOVER GLOW"), but
+   dialed way down: opacity cut ~90% and the loop slowed to double the
+   button's speed, since a filled-in field reads that way for as long as
+   the user stays on the page — it needs to be a calm, ambient indicator,
+   not a hover-style call to action.
+   .cfield/.cfield-area are <input>/<textarea> — replaced elements don't
+   render ::before/::after, so the sweep can't be a pseudo-element here
+   like it is on buttons; instead it's a second, animated background-image
+   layer on the field's own background (background-color still shows
+   through as the base layer underneath). .phone-field is a plain <div>
+   wrapper though, so it uses the normal ::before technique, matched to
+   its filled state via :has() on the inner .phone-input. */
+.cfield:not(:placeholder-shown), .cfield-area:not(:placeholder-shown) {
+  background-color: var(--phrase);
+  background-image: var(--sweep-gradient);
+  --sweep-opacity: .095;
+  background-size: 300% 100%; background-repeat: no-repeat; background-position-x: -150%;
+  color: #eeeef0;
+  animation: btn-sheen 3.6s linear infinite;
+}
+.phone-field:has(.phone-input:not(:placeholder-shown)) {
+  background: var(--phrase);
+  position: relative; isolation: isolate;
+  --sweep-w: 18px;
+  --sweep-opacity: .095;
+}
+/* .country-code deliberately NOT included here: it's an opaque circle with
+   its own background (var(--main-bg)) sitting on top of the pill, not
+   direct text-on-purple like .phone-input is — its existing color:var(--
+   primary) already contrasts correctly against its own background in both
+   themes. Forcing it to #eeeef0 here made it invisible specifically in
+   light mode, since var(--main-bg) IS #eeeef0 in light mode — text and
+   background became the same color. */
+.phone-field:has(.phone-input:not(:placeholder-shown)) .phone-input {
+  color: #eeeef0;
+}
+.phone-field:has(.phone-input:not(:placeholder-shown))::before {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  border-radius: inherit;
+  background: var(--sweep-gradient);
+  background-size: 300% 100%; background-repeat: no-repeat; background-position-x: -150%;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  animation: btn-sheen 3.6s linear infinite;
+}
+
+/* Honeypot field — off-screen (not display:none/visibility:hidden, which
+   some spam bots specifically know to skip when looking for a field to
+   fill), unreachable by keyboard/screen readers via tabindex/aria-hidden. */
+.hp-field { position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* ── FILE DROP ZONE ── */
+.filedrop {
+  position: relative;
+  background: var(--header-bg);
+  border: 1.5px dashed var(--phrase);
+  border-radius: var(--r-dropzone);
+  padding: max(28px, calc(2.6 * var(--u))) max(20px, calc(2 * var(--u)));
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: max(10px, calc(1 * var(--u)));
+  transition: background .2s;
+}
+.filedrop.dragover { background: color-mix(in srgb, var(--phrase) 14%, var(--header-bg)); }
+.filedrop-ico { width: max(28px, calc(2.6 * var(--u))); height: auto; color: var(--muted); }
+.filedrop-text { color: var(--muted); font-size: var(--fs-form-label); margin: 0; }
+.filepick-btn, .submit-btn {
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  border: none; border-radius: var(--r-field);
+  padding: max(9px, calc(.8 * var(--u))) max(20px, calc(1.8 * var(--u)));
+  font-size: var(--fs-caption);
+  font-family: 'Arha', sans-serif;
+  transition: transform .15s, background .3s, opacity .2s;
+}
+.filepick-btn { background: var(--main-bg); color: var(--muted); }
+.filepick-btn:hover, .submit-btn:hover { transform: translateY(-1px); }
+/* submit — same size/roundness as .filepick-btn ("Choose a File"), colors inverted */
+.submit-btn { align-self: center; margin-top: max(6px, calc(.6 * var(--u))); background: var(--primary); color: var(--main-bg); }
+.submit-btn:hover { opacity: .9 }
+.submit-btn:disabled { opacity: .6; cursor: default; transform: none }
+.filepicked {
+  display: none; align-items: center; gap: max(8px, calc(.7 * var(--u)));
+  max-width: 100%;
+}
+.filepicked.show { display: inline-flex; }
+.filepick-name { font-size: var(--fs-form-label); color: var(--primary); word-break: break-all; }
+.filepick-remove {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: max(20px, calc(1.8 * var(--u))); height: max(20px, calc(1.8 * var(--u)));
+  border-radius: 999px; border: none; cursor: pointer;
+  background: var(--main-bg); color: var(--muted);
+  font-size: max(13px, calc(1.2 * var(--u))); line-height: 1;
+  transition: background .2s, color .2s, transform .15s;
+}
+.filepick-remove:hover { background: var(--phrase); color: var(--main-bg); transform: rotate(90deg); }
+.filepick-input {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* small animated toast for the "same file again" warning — a compact bubble,
+   distinct from the big centered success pop-up. Red text signals an error;
+   the light card background (theme-aware) keeps it legible in both modes.
+   One unified keyframe (not two stacked animations) covers pop-in, hold and
+   fade-out, so there's no risk of a later "fade" animation's fill-mode
+   fighting an earlier "pop-in" animation's fill-mode over the same property
+   — that composition ambiguity is what made this unreliable before. */
+.filetoast {
+  /* absolute, in document coordinates — NOT fixed. It gets repositioned
+     per-error to sit right by whichever field actually has the problem
+     (see showFieldToast()/place() in the script below), which can be
+     anywhere on the page. It lives at the top level of <body> (moved out
+     of .filedrop) with no positioned ancestor in between, so this
+     resolves against the initial containing block — i.e. real page
+     coordinates that scroll along with the document, not the viewport.
+     (An earlier version used position:fixed, which is viewport-relative:
+     the toast would show up correctly, but scrolling afterward moved the
+     field away while the toast stayed frozen on-screen, visually
+     detaching from whatever it was pointing at.) */
+  position: absolute; top: max(10px, calc(1 * var(--u))); left: 50%;
+  transform: translateX(-50%) scale(.4);
+  background: var(--card); color: #e5484d;
+  box-shadow: var(--card-shadow);
+  padding: max(7px, calc(.6 * var(--u))) max(16px, calc(1.4 * var(--u)));
+  border-radius: 999px;
+  font-size: var(--fs-caption); font-weight: 600;
+  white-space: nowrap; max-width: calc(100% - 24px);
+  overflow: hidden; text-overflow: ellipsis;
+  opacity: 0; pointer-events: none; z-index: 5;
+}
+.filetoast.show { animation: _toast-life 3200ms both; }
+@keyframes _toast-life {
+  0%   { opacity: 0; transform: translateX(-50%) scale(.4); animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  12%  { opacity: 1; transform: translateX(-50%) scale(1.08); animation-timing-function: ease-out; }
+  18%  { opacity: 1; transform: translateX(-50%) scale(1); }
+  90%  { opacity: 1; transform: translateX(-50%) scale(1); animation-timing-function: ease-in; }
+  100% { opacity: 0; transform: translateX(-50%) scale(.85); }
+}
+
+/* ── SUCCESS POP-UP (replaces the inline "sent" text) ── */
+.successmask {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,.35);
+  align-items: center; justify-content: center;
+  padding: max(20px, calc(4 * var(--u)));
+}
+.successmask.open {
+  display: flex;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  animation: _successmask-in 200ms ease both;
+}
+.successmask.closing {
+  display: flex;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  animation: _successmask-out 180ms ease both;
+}
+@keyframes _successmask-in  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes _successmask-out { from { opacity: 1 } to { opacity: 0 } }
+.successcard {
+  position: relative;
+  background: var(--surface);
+  border-radius: max(28px, calc(5.8 * var(--u)));
+  padding: max(36px, calc(4.2 * var(--u))) max(30px, calc(4.5 * var(--u)));
+  /* fixed px cap, not calc(N*u) — mobile's --u is height-driven and tiny, so
+     an --u-scaled cap ends up narrower than the phone regardless of its
+     actual width. A plain px cap keeps this a sensible dialog width on
+     every phone, not just ones with a particular aspect ratio. */
+  max-width: min(90vw, 440px);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: max(16px, calc(1.8 * var(--u)));
+  box-shadow: var(--card-shadow);
+}
+.successmask.open .successcard {
+  animation: _successcard-in 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.successmask.closing .successcard {
+  animation: _successcard-out 160ms cubic-bezier(0.4, 0, 0.6, 1) both;
+}
+@keyframes _successcard-in  { from { opacity: 0; transform: scale(.7) } to { opacity: 1; transform: scale(1) } }
+@keyframes _successcard-out { from { opacity: 1; transform: scale(1) } to { opacity: 0; transform: scale(.82) } }
+.successclose {
+  position: absolute; top: max(12px, calc(3 * var(--u))); right: max(12px, calc(3 * var(--u)));
+  background: none; border: none; padding: 0;
+  width: max(24px, calc(2.2 * var(--u))); height: max(24px, calc(2.2 * var(--u)));
+  cursor: pointer;
+}
+.successclose img { width: 100%; height: 100%; display: block; }
+.successtick { width: max(64px, calc(6.5 * var(--u))); height: auto; }
+.successtick-circle {
+  stroke: var(--phrase); stroke-width: 3; stroke-dasharray: 145; stroke-dashoffset: 145;
+}
+.successtick-check {
+  stroke: var(--phrase); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 40; stroke-dashoffset: 40;
+}
+.successmask.open .successtick-circle { animation: _tick-draw 500ms ease-out forwards; }
+.successmask.open .successtick-check  { animation: _tick-draw 350ms ease-out 450ms forwards; }
+@keyframes _tick-draw { to { stroke-dashoffset: 0 } }
+.successcard-msg { color: var(--primary); font-size: var(--fs-form-input); line-height: 1.5; margin: 0; }
+
+/* ── NO-FILE CONFIRM DIALOG (reuses the success mask/card's keyframes) ── */
+.confirmmask {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,.35);
+  align-items: center; justify-content: center;
+  padding: max(20px, calc(4 * var(--u)));
+}
+.confirmmask.open {
+  display: flex;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  animation: _successmask-in 200ms ease both;
+}
+.confirmmask.closing {
+  display: flex;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  animation: _successmask-out 180ms ease both;
+}
+.confirmcard {
+  background: var(--surface);
+  border-radius: max(28px, calc(5.8 * var(--u)));
+  padding: max(32px, calc(3.6 * var(--u))) max(28px, calc(3.6 * var(--u)));
+  /* fixed px cap, not calc(N*u) — see .successcard's identical comment */
+  max-width: min(90vw, 420px);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: max(20px, calc(2 * var(--u)));
+  box-shadow: var(--card-shadow);
+}
+.confirmmask.open .confirmcard { animation: _successcard-in 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.confirmmask.closing .confirmcard { animation: _successcard-out 160ms cubic-bezier(0.4, 0, 0.6, 1) both; }
+.confirmcard-msg { color: var(--primary); font-size: var(--fs-form-input); line-height: 1.5; margin: 0; max-width: 100%; }
+/* explicit width (not just max-width) — a nested flex row inside a
+   `flex-direction:column; align-items:center` parent can size to its own
+   unclamped content width on mobile WebKit instead of the parent's
+   available space, which is what was pushing the buttons past the card
+   edge. flex-wrap + min-width:0 are the fallback if it's ever still tight. */
+.confirmcard-actions {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: max(10px, calc(1 * var(--u)));
+  width: 100%;
+}
+.confirm-cancel, .confirm-proceed {
+  flex: 1 1 auto; min-width: 0; box-sizing: border-box;
+  border: none; cursor: pointer; border-radius: var(--r-field);
+  padding: max(10px, calc(.9 * var(--u))) max(18px, calc(1.8 * var(--u)));
+  font-size: var(--fs-ui); font-family: 'Arha', sans-serif;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: transform .15s, opacity .2s, background .3s;
+}
+.confirm-cancel { background: var(--header-bg); color: var(--primary); }
+.confirm-proceed { background: var(--primary); color: var(--main-bg); }
+.confirm-cancel:hover, .confirm-proceed:hover { transform: translateY(-1px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .successmask.open, .successmask.closing,
+  .successmask.open .successcard, .successmask.closing .successcard,
+  .successtick-circle, .successtick-check,
+  .confirmmask.open, .confirmmask.closing,
+  .confirmmask.open .confirmcard, .confirmmask.closing .confirmcard { animation-duration: 1ms !important; animation-delay: 0ms !important; }
+  .cfield:not(:placeholder-shown), .cfield-area:not(:placeholder-shown),
+  .phone-field:has(.phone-input:not(:placeholder-shown))::before { animation: none !important; }
+  /* the toast is an error message, not decoration — cutting it to 1ms would
+     make it unreadable. Keep the same on-screen hold time, just drop the
+     bounce/scale for a plain fade. */
+  .filetoast.show { animation: _toast-life-reduced 3200ms both; }
+}
+@keyframes _toast-life-reduced {
+  0%   { opacity: 0; transform: translateX(-50%); }
+  8%   { opacity: 1; transform: translateX(-50%); }
+  92%  { opacity: 1; transform: translateX(-50%); }
+  100% { opacity: 0; transform: translateX(-50%); }
+}
+
+@media (orientation: portrait), (max-width: 700px) {
+  .cform { min-width: 0; max-width: none }
+  .frow { grid-template-columns: 1fr }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV — Consult page: Consult pill → Home ═══ -->
+<nav>
+  <div class="nav-left">
+    <a href="services.html"   class="nav-pill">Services</a>
+    <a href="index.html"      class="nav-pill nav-pill-home">Home</a>
+  </div>
+
+  <button class="ham-btn" onclick="openMenu()" aria-label="Menu">
+    <img class="ham-icon" src="assets/img/menu-icon-light.svg" alt="">
+  </button>
+
+  <a href="index.html" class="logo">
+    <img class="logo-img" src="assets/img/logo-light.svg" alt="Synora Digitals">
+  </a>
+
+  <div class="nav-right">
+    <a href="policies.html" class="nav-pill">Policies</a>
+    <a href="about.html"    class="nav-pill">About</a>
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-label="Toggle dark mode"><img class="theme-icon" src="assets/img/moon-icon.svg" alt=""></button>
+  </div>
+</nav>
+
+<!-- ═══ MOBILE MENU ═══ -->
+<div class="mmask" id="mmask" onclick="maskClick(event)">
+  <div class="mmcard">
+    <button class="mmclose" onclick="closeMenu()" aria-label="Close menu"><img class="cross-icon" src="assets/img/menu-cross-light.svg" alt=""></button>
+    <nav class="mmlinks">
+      <a href="services.html"   onclick="closeMenu()">Services</a>
+      <a href="index.html"      onclick="closeMenu()" class="mmlink-home">Home</a>
+      <a href="policies.html"   onclick="closeMenu()">Policies</a>
+      <a href="about.html"      onclick="closeMenu()">About</a>
+    </nav>
+  </div>
+</div>
+
+<!-- ═══ SUCCESS POP-UP ═══ -->
+<div class="successmask" id="successMask" onclick="successMaskClick(event)" role="alertdialog" aria-live="assertive" aria-label="Message sent">
+  <div class="successcard">
+    <button class="successclose" onclick="closeSuccess()" aria-label="Close"><img class="cross-icon" src="assets/img/menu-cross-light.svg" alt=""></button>
+    <svg class="successtick" viewBox="0 0 52 52" aria-hidden="true">
+      <circle class="successtick-circle" cx="26" cy="26" r="23" fill="none"/>
+      <path class="successtick-check" fill="none" d="M15 27l7 7 15-16"/>
+    </svg>
+    <p class="successcard-msg">Sent. A human will get back to you — promise.</p>
+  </div>
+</div>
+
+<!-- ═══ NO-FILE CONFIRM DIALOG ═══ -->
+<div class="confirmmask" id="confirmMask" onclick="confirmMaskClick(event)" role="alertdialog" aria-label="No file attached">
+  <div class="confirmcard">
+    <p class="confirmcard-msg">No reference file attached, proceed without it?</p>
+    <div class="confirmcard-actions">
+      <button type="button" class="confirm-cancel" onclick="cancelSubmitWithoutFile()">Cancel</button>
+      <button type="button" class="confirm-proceed" onclick="proceedSubmitWithoutFile()">Proceed</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lives at the top level (not nested in .filedrop like before) and is
+     positioned in real document coordinates (see .filetoast CSS + place()
+     in the script below) so it scrolls along with the page instead of
+     staying pinned to the viewport while the field it's pointing at
+     scrolls away underneath it. -->
+<div class="filetoast" id="fileToast" role="status" aria-live="polite"></div>
+
+<!-- ═══ PAGE CARD ═══ -->
+<div class="page-card">
+  <div class="page-head">
+    <h1>Book a Consultation</h1>
+    <p class="pg-sub">A free call to find out what&rsquo;s worth automating in your business — and, just as importantly, what isn&rsquo;t.</p>
+  </div>
+
+  <div class="pg">
+
+    <section class="pg-sec" id="form">
+      <h2 class="pg-h">Tell us about your business</h2>
+      <form class="cform" onsubmit="return sendConsult(this)" novalidate>
+        <div class="frow">
+          <input required name="name" type="text" autocomplete="name" class="cfield" placeholder="Name *" aria-label="Name">
+          <input name="biz" type="text" autocomplete="organization" class="cfield" placeholder="Business Name (Optional)" aria-label="Business name">
+        </div>
+        <div class="frow">
+          <input required name="email" type="email" autocomplete="email" class="cfield" placeholder="Email *" aria-label="Email">
+          <div class="phone-field">
+            <select name="countryCode" class="country-code" aria-label="Country code">
+              <option value="+92">🇵🇰 +92</option>
+              <option value="+971">🇦🇪 +971</option>
+              <option value="+966">🇸🇦 +966</option>
+              <option value="+974">🇶🇦 +974</option>
+              <option value="+965">🇰🇼 +965</option>
+              <option value="+973">🇧🇭 +973</option>
+              <option value="+968">🇴🇲 +968</option>
+              <option value="+44">🇬🇧 +44</option>
+              <option value="+49">🇩🇪 +49</option>
+              <option value="+33">🇫🇷 +33</option>
+              <option value="+31">🇳🇱 +31</option>
+              <option value="+34">🇪🇸 +34</option>
+              <option value="+39">🇮🇹 +39</option>
+              <option value="+46">🇸🇪 +46</option>
+              <option value="+47">🇳🇴 +47</option>
+              <option value="+45">🇩🇰 +45</option>
+              <option value="+353" selected>🇮🇪 +353</option>
+              <option value="+41">🇨🇭 +41</option>
+              <option value="+32">🇧🇪 +32</option>
+              <option value="+43">🇦🇹 +43</option>
+              <option value="+48">🇵🇱 +48</option>
+              <option value="+351">🇵🇹 +351</option>
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+1">🇨🇦 +1</option>
+              <option value="+52">🇲🇽 +52</option>
+              <option value="+7">🇷🇺 +7</option>
+            </select>
+            <input name="phone" type="tel" autocomplete="tel" class="phone-input" placeholder="Phone / WhatsApp" aria-label="Phone or WhatsApp number">
+          </div>
+        </div>
+        <textarea required name="msg" rows="4" class="cfield cfield-area" placeholder="Describe the tasks that eat your time, tools you use, roughly monthly volume, anything that helps." aria-label="What would you like to automate?"></textarea>
+
+        <div class="filedrop" id="fileDrop">
+          <svg class="filedrop-ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 15V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v3a2 2 0 002 2h10a2 2 0 002-2v-3"/></svg>
+          <p class="filedrop-text">Drag &amp; drop your requirement / reference document (up to 10MB)</p>
+          <label class="filepick-btn" for="attachmentInput">Choose a File</label>
+          <span class="filepicked" id="filePicked">
+            <span class="filepick-name" id="attachmentName"></span>
+            <button type="button" class="filepick-remove" id="attachmentRemove" aria-label="Remove attached file">&times;</button>
+          </span>
+          <input type="file" id="attachmentInput" name="attachment" class="filepick-input" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.csv,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv">
+        </div>
+
+        <!-- Honeypot: real visitors never see or fill this (off-screen, not
+             display:none — some bots specifically skip fields hidden that
+             way). The backend silently no-ops the request if it's non-empty. -->
+        <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <button class="submit-btn" type="submit">Submit consultation</button>
+        <p class="pg-note">Goes straight to our inbox — no email app, no pop-ups — and we reply to the address you typed. No spam, no 47-email &ldquo;nurture sequence&rdquo;: we automate things, not annoyance.</p>
+      </form>
+    </section>
+  </div>
+
+  <div class="sep" aria-hidden="true"><svg class="sep-web" viewBox="0 0 4064 22.28" preserveAspectRatio="xMidYMid slice"><path d="M0,.93c25.4,0,25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42"/></svg><svg class="sep-mob" viewBox="0 0 1430.4 7.02" preserveAspectRatio="xMidYMid slice"><path d="M0,.29c8.94,0,8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43"/></svg></div>
+
+  <div class="pg">
+    <section class="pg-sec">
+      <h2 class="pg-h">What happens after you send it</h2>
+      <div class="steps">
+        <div class="step"><div class="step-head"><span class="step-n">1</span><h3>Discovery call</h3></div><p>We listen. You walk us through your day-to-day: the workflows, the tools, the tasks that eat your team&rsquo;s time. No technical preparation needed.</p></div>
+        <div class="step"><div class="step-head"><span class="step-n">2</span><h3>Process audit</h3></div><p>We map your repetitive steps and identify where automation pays for itself fastest. If nothing does, we&rsquo;ll tell you that too.</p></div>
+        <div class="step"><div class="step-head"><span class="step-n">3</span><h3>Proposal</h3></div><p>You get a fixed scope with custom pricing — based on workflow complexity, integrations, and the support you need. No surprises later.</p></div>
+        <div class="step"><div class="step-head"><span class="step-n">4</span><h3>Build &amp; test</h3></div><p>We build the automation and test it against your real cases, with your approval at every step before anything goes live.</p></div>
+        <div class="step"><div class="step-head"><span class="step-n">5</span><h3>Deploy &amp; ongoing support</h3></div><p>We launch, monitor, and keep it running. Automations are living systems — we don&rsquo;t disappear after delivery.</p></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="sep" aria-hidden="true"><svg class="sep-web" viewBox="0 0 4064 22.28" preserveAspectRatio="xMidYMid slice"><path d="M0,.93c25.4,0,25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42"/></svg><svg class="sep-mob" viewBox="0 0 1430.4 7.02" preserveAspectRatio="xMidYMid slice"><path d="M0,.29c8.94,0,8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43"/></svg></div>
+
+  <div class="pg">
+    <section class="pg-sec">
+      <div class="grid2">
+        <article class="icard">
+          <h3>About pricing</h3>
+          <p>There are no fixed packages, because every automation depends entirely on your business — its processes, tools and volumes. You get a custom quote in the proposal, and you always know the full cost before we build anything. (We once tried making a pricing table. Every row said &ldquo;it depends.&rdquo;)</p>
+        </article>
+        <article class="icard">
+          <h3>Who you&rsquo;ll talk to</h3>
+          <p>Directly with the people who design and build your automation — no sales layer in between. We&rsquo;re a small company and we take on a limited number of projects at a time, on purpose.</p>
+        </article>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="sep" aria-hidden="true"><svg class="sep-web" viewBox="0 0 4064 22.28" preserveAspectRatio="xMidYMid slice"><path d="M0,.93c25.4,0,25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42s25.4,20.42,50.8,20.42s25.4,-20.42,50.8,-20.42"/></svg><svg class="sep-mob" viewBox="0 0 1430.4 7.02" preserveAspectRatio="xMidYMid slice"><path d="M0,.29c8.94,0,8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43s8.94,6.43,17.88,6.43s8.94,-6.43,17.88,-6.43"/></svg></div>
+
+  <div class="pg-cta">
+    <p>Prefer plain email?</p>
+    <p class="pg-note">Email: <a href="mailto:synoradigitals@gmail.com" class="email-accent">synoradigitals@gmail.com</a> &middot; Typical reply time: within 24 hours</p>
+  </div>
+  <div style="height: var(--gap)"></div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <a href="index.html" class="foot-logo">
+    <img class="logo-img" src="assets/img/logo-light.svg" alt="Synora Digitals">
+  </a>
+  <div class="foot-links">
+    <a href="index.html">Home</a>
+    <a href="services.html">Services</a>
+    <a href="policies.html" class="foot-legal-link foot-privacy">Policies</a>
+    <a href="about.html" class="foot-legal-link foot-terms">About</a>
+  </div>
+  <div class="foot-copy">© 2025 Synora Digitals. All rights reserved &mdash; the paperwork we didn&rsquo;t automate.</div>
+</footer>
+
+<script src="assets/js/shared.js"></script>
+<script>
+// ── SUCCESS POP-UP ──
+function openSuccess() {
+  var m = document.getElementById('successMask');
+  m.classList.remove('closing');
+  m.classList.add('open');
+  clearTimeout(window._successTimer);
+  window._successTimer = setTimeout(closeSuccess, 4500);
+}
+function closeSuccess() {
+  var m = document.getElementById('successMask');
+  if (!m.classList.contains('open')) return;
+  clearTimeout(window._successTimer);
+  m.classList.add('closing');
+  setTimeout(function () { m.classList.remove('open', 'closing'); }, 195);
+}
+function successMaskClick(e) { if (e.target === e.currentTarget) closeSuccess(); }
+
+// ── NO-FILE CONFIRM DIALOG ──
+var confirmMask = document.getElementById('confirmMask');
+var pendingForm = null; // the <form> waiting on the user's Proceed/Cancel choice
+function openConfirm() {
+  confirmMask.classList.remove('closing');
+  confirmMask.classList.add('open');
+}
+function closeConfirm() {
+  if (!confirmMask.classList.contains('open')) return;
+  confirmMask.classList.add('closing');
+  setTimeout(function () { confirmMask.classList.remove('open', 'closing'); }, 195);
+}
+function confirmMaskClick(e) { if (e.target === e.currentTarget) cancelSubmitWithoutFile(); }
+function cancelSubmitWithoutFile() { closeConfirm(); pendingForm = null; }
+function proceedSubmitWithoutFile() {
+  closeConfirm();
+  var f = pendingForm; pendingForm = null;
+  if (f) doSend(f);
+}
+
+// ── FILE ATTACHMENT (click-to-choose + drag-and-drop) ──
+var MAX_ATTACHMENT = 10 * 1024 * 1024; // 10MB
+var ALLOWED_EXT = ['pdf', 'doc', 'docx', 'txt', 'xls', 'xlsx', 'csv'];
+var ALLOWED_MIME = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'text/plain', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'];
+var attachmentInput = document.getElementById('attachmentInput');
+var attachmentName = document.getElementById('attachmentName');
+var attachmentRemove = document.getElementById('attachmentRemove');
+var filePicked = document.getElementById('filePicked');
+var fileToast = document.getElementById('fileToast');
+var fileDrop = document.getElementById('fileDrop');
+var lastAttachedMeta = null; // {name, size, lastModified} of the currently-attached file
+var _fileToastTimer;
+
+function showFileToast(msg) {
+  clearTimeout(_fileToastTimer);
+  fileToast.textContent = msg;
+  fileToast.classList.remove('show');
+  void fileToast.offsetWidth; // restart the animation if it's re-triggered quickly
+  fileToast.classList.add('show');
+  _fileToastTimer = setTimeout(function () { fileToast.classList.remove('show'); }, 3300);
+}
+
+// Is `el` (roughly) on-screen right now? Checked by its vertical center,
+// not requiring the whole element to be visible — a field half-cut by the
+// viewport edge still counts as "in view."
+function isRoughlyInView(el) {
+  var r = el.getBoundingClientRect();
+  var vh = window.innerHeight || document.documentElement.clientHeight;
+  var centerY = r.top + r.height / 2;
+  return centerY >= 0 && centerY <= vh;
+}
+// Runs cb once fieldEl's position has stopped changing — i.e. any in-flight
+// smooth-scroll triggered to bring it into view has settled.
+// (Earlier version of this used the native "scrollend" event, but for a
+// whole-page/viewport scroll that event fires on `document` specifically —
+// not on document.scrollingElement/documentElement, which is what was
+// listened on — so the listener never caught it and every off-screen error
+// fell through to a full 1s safety-net delay, which read as broken. Polling
+// the field's own rect sidesteps that (and any other browser-support
+// quirks with a still-fairly-new event) by watching the one thing we
+// actually care about directly.)
+function afterScroll(fieldEl, cb) {
+  var done = false, lastTop = null, stableFrames = 0;
+  function finish() { if (done) return; done = true; cb(); }
+  function check() {
+    if (done) return;
+    var top = fieldEl.getBoundingClientRect().top;
+    if (lastTop !== null && Math.abs(top - lastTop) < 0.5) {
+      stableFrames++;
+      if (stableFrames >= 3) { finish(); return; }
+    } else {
+      stableFrames = 0;
+    }
+    lastTop = top;
+    requestAnimationFrame(check);
+  }
+  requestAnimationFrame(check);
+  setTimeout(finish, 1000); // safety net in case it never stabilizes
+}
+// Places the toast just by `fieldEl` (above it, or below if that would run
+// off the top of the screen) and shows it — scrolling the field into view
+// first if it's currently off-screen, so the error never pops up somewhere
+// the user isn't looking. This is the entry point every validation/file
+// error below goes through; showFileToast() itself is just the low-level
+// show/hide.
+function showFieldToast(fieldEl, msg) {
+  function place() {
+    // getBoundingClientRect() is viewport-relative; the toast is now
+    // position:absolute in document coordinates (see .filetoast CSS), so
+    // window.scrollX/Y gets added to convert — this is what makes it scroll
+    // along with the field afterward instead of staying pinned on-screen.
+    var r = fieldEl.getBoundingClientRect();
+    var aboveTop = r.top - 44; // viewport-relative, just to decide above-vs-below
+    var top = (aboveTop > 8 ? aboveTop : r.bottom + 12) + window.scrollY;
+    var left = (r.left + r.width / 2) + window.scrollX;
+    fileToast.style.left = left + 'px';
+    fileToast.style.top = top + 'px';
+    showFileToast(msg);
+  }
+  if (isRoughlyInView(fieldEl)) {
+    place();
+  } else {
+    fieldEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    afterScroll(fieldEl, place);
+  }
+}
+
+function clearAttachment() {
+  attachmentInput.value = '';
+  attachmentName.textContent = '';
+  filePicked.classList.remove('show');
+  lastAttachedMeta = null;
+}
+attachmentRemove.addEventListener('click', clearAttachment);
+
+function fileExt(name) {
+  var m = /\.([a-z0-9]+)$/i.exec(name || '');
+  return m ? m[1].toLowerCase() : '';
+}
+
+// Every rejection below (duplicate, wrong type, too large, more than one
+// file) uses the same showFieldToast() bubble, anchored to the drop zone —
+// one consistent error presentation instead of a different look per failure.
+function handleAttachment() {
+  var file = attachmentInput.files[0];
+  if (!file) { clearAttachment(); return; }
+  var isSame = lastAttachedMeta && file.name === lastAttachedMeta.name &&
+    file.size === lastAttachedMeta.size && file.lastModified === lastAttachedMeta.lastModified;
+  if (isSame) {
+    showFieldToast(fileDrop, 'That file is already attached.');
+    return; // keep the existing attachment as-is
+  }
+  var validType = ALLOWED_EXT.indexOf(fileExt(file.name)) !== -1 || ALLOWED_MIME.indexOf(file.type) !== -1;
+  if (!validType) {
+    clearAttachment();
+    showFieldToast(fileDrop, 'Please attach a PDF, Word, Excel, CSV, or text file.');
+    return;
+  }
+  if (file.size > MAX_ATTACHMENT) {
+    clearAttachment();
+    showFieldToast(fileDrop, 'That file is over 10MB — please attach something smaller.');
+    return;
+  }
+  lastAttachedMeta = { name: file.name, size: file.size, lastModified: file.lastModified };
+  attachmentName.textContent = file.name;
+  filePicked.classList.add('show');
+}
+attachmentInput.addEventListener('change', handleAttachment);
+
+['dragenter', 'dragover'].forEach(function (evt) {
+  fileDrop.addEventListener(evt, function (e) { e.preventDefault(); fileDrop.classList.add('dragover'); });
+});
+['dragleave', 'drop'].forEach(function (evt) {
+  fileDrop.addEventListener(evt, function (e) { e.preventDefault(); fileDrop.classList.remove('dragover'); });
+});
+fileDrop.addEventListener('drop', function (e) {
+  var dt = e.dataTransfer;
+  if (!dt || !dt.files || !dt.files[0]) return;
+  if (dt.files.length > 1) { showFieldToast(fileDrop, 'Please attach only one file.'); return; }
+  attachmentInput.files = dt.files;
+  handleAttachment();
+});
+
+// IP/country used to be looked up client-side via a chain of third-party
+// APIs (Cloudflare's /cdn-cgi/trace, ipapi.co, etc.) — removed along with
+// fetchGeo()/_geo/_cc/_country(). The backend derives the real IP straight
+// from the request itself, which is both simpler and more trustworthy (a
+// client-supplied "IP" form field is trivially spoofable; a server-read one
+// isn't), and removes several third-party network calls that were sitting
+// in the critical path for no functional benefit. Only the visitor's local
+// time genuinely can't come from the server — that's still computed here,
+// for human context in the email only, never validated or trusted.
+function _clientTime() {
+  var now = new Date();
+  var tz = 'unknown timezone';
+  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || tz; } catch (e) {}
+  try {
+    return now.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) + ' (' + tz + ')';
+  } catch (e) {
+    return now.toString();
+  }
+}
+
+// ── FIELD VALIDATION ──
+// Every failure below reuses showFieldToast() — same bubble, same colors,
+// same animation, same ~3.3s on-screen duration as the file-attachment
+// errors, rather than a separate validation UI.
+function looksLikeValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email || '').trim());
+}
+// Not a perfect "real name" detector (no regex can be), but catches obvious
+// keyboard-mash: needs actual letters only, no 4+ repeated characters, and
+// every word needs at least one vowel and no 5+-consonant run.
+var KEYBOARD_MASH = ['qwerty', 'qwertyuiop', 'asdf', 'asdfgh', 'asdfghjkl', 'zxcv', 'zxcvbn', 'zxcvbnm', 'asdasd', 'qweqwe'];
+function looksLikeRealName(name) {
+  name = (name || '').trim();
+  if (name.length < 2) return false;
+  if (!/^[a-zA-ZÀ-ſ' -]+$/.test(name)) return false;
+  if (/(.)\1{3,}/.test(name)) return false;
+  var words = name.split(/[\s-]+/).filter(Boolean);
+  for (var i = 0; i < words.length; i++) {
+    var w = words[i];
+    if (KEYBOARD_MASH.indexOf(w.toLowerCase()) !== -1) return false;
+    if (!/[aeiouAEIOUÀ-ſ]/.test(w)) return false;
+    if (/[^aeiouAEIOU'-]{5,}/i.test(w)) return false;
+  }
+  return true;
+}
+// Approximate national-number digit-count ranges per selected dial code —
+// not authoritative telecom rules, just enough to catch an obviously wrong
+// or incomplete number for the chosen country. +1 extra digit tolerated
+// throughout for users who type the local leading 0 alongside the code.
+var PHONE_DIGIT_RANGES = {
+  '+92': [10, 11], '+971': [8, 9], '+966': [8, 9], '+974': [7, 8], '+965': [7, 8],
+  '+973': [7, 8], '+968': [7, 8], '+44': [9, 10], '+49': [6, 11], '+33': [9, 9],
+  '+31': [9, 9], '+34': [9, 9], '+39': [8, 10], '+46': [7, 10], '+47': [8, 8],
+  '+45': [8, 8], '+353': [7, 9], '+41': [9, 9], '+32': [8, 9], '+43': [4, 13],
+  '+48': [9, 9], '+351': [9, 9], '+1': [10, 10], '+52': [10, 10], '+7': [10, 10]
+};
+function looksLikeValidPhone(phone, dialCode) {
+  var digits = (phone || '').replace(/\D/g, '');
+  if (!digits) return true; // caller only invokes this when the (optional) field is non-empty
+  var range = PHONE_DIGIT_RANGES[dialCode] || [6, 14];
+  return digits.length >= range[0] && digits.length <= range[1] + 1;
+}
+
+// Entry point for the form's onsubmit. If no file is attached, this pauses
+// on the confirm dialog instead of sending — doSend() only runs once the
+// user picks Proceed (or immediately, if a file's already there).
+function sendConsult(f) {
+  // The form carries novalidate — required/type="email" native constraint
+  // validation was intercepting submission before this handler ever ran
+  // (the browser showed its own tooltip and auto-scrolled, so our toast
+  // never appeared), which is why every check here is fully manual, name/
+  // email's "must not be empty" included.
+  if (!looksLikeValidEmail(f.email.value)) {
+    showFieldToast(f.email, 'Please enter a valid email address.');
+    return false;
+  }
+  if (!looksLikeRealName(f.name.value)) {
+    showFieldToast(f.name, 'Please enter a valid name.');
+    return false;
+  }
+  if (!f.msg.value.trim()) {
+    showFieldToast(f.msg, 'Please describe what you’d like to automate.');
+    return false;
+  }
+  if (f.phone.value.trim() && !looksLikeValidPhone(f.phone.value, f.countryCode.value)) {
+    showFieldToast(f.phone.closest('.phone-field') || f.phone, 'Please enter a valid phone number for the selected country.');
+    return false;
+  }
+  if (!attachmentInput.files[0]) {
+    pendingForm = f;
+    openConfirm();
+    return false;
+  }
+  return doSend(f);
+}
+
+// Sends to our own backend (see backend/README.md) — no mail app, no
+// popup, no redirect of any kind, and no third-party form relay. The
+// backend re-validates everything server-side (never trust the client
+// alone) and derives the sender IP itself from the request, so unlike the
+// old FormSubmit integration, no "IP"/"Country" fields need to be sent —
+// only the one thing that genuinely can't come from the server, the
+// visitor's local time, is included, for human context only.
+//
+// CONSULT_API_URL is the one thing that MUST be updated once the backend
+// is actually deployed — see backend/README.md for the two deployment
+// paths and what this should point to in each case.
+var CONSULT_API_URL = 'https://api.synoradigitals.com/api/consult'; // ← placeholder, replace once the backend is deployed
+
+function doSend(f) {
+  var btn = f.querySelector('.submit-btn');
+  var file = attachmentInput.files[0];
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  // FormData (not JSON) — a JSON body can't carry the attached file's bytes.
+  // Omit Content-Type: fetch/the browser set the multipart boundary itself.
+  var fd = new FormData();
+  fd.append('name', f.name.value);
+  fd.append('business', f.biz.value || '');
+  fd.append('email', f.email.value);
+  fd.append('country_code', f.countryCode.value);
+  fd.append('phone', f.phone.value || '');
+  fd.append('message', f.msg.value);
+  fd.append('client_time', _clientTime());
+  fd.append('website', f.website.value || ''); // honeypot — always sent, should stay empty
+  if (file) fd.append('attachment', file, file.name);
+
+  var controller = new AbortController();
+  var timeoutId = setTimeout(function () { controller.abort(); }, 10000);
+
+  function resetButton() { btn.textContent = 'Submit consultation'; btn.disabled = false; }
+
+  fetch(CONSULT_API_URL, {
+    method: 'POST',
+    body: fd,
+    signal: controller.signal
+  }).then(function (r) {
+    clearTimeout(timeoutId);
+    return r.json().then(function (data) { return { httpOk: r.ok, data: data }; });
+  }).then(function (res) {
+    if (!res.httpOk || !res.data.ok) {
+      resetButton();
+      if (res.data.error === 'validation_error' && res.data.fields) {
+        var field = Object.keys(res.data.fields)[0];
+        var anchor = f[field] || btn;
+        if (field === 'phone') anchor = f.phone.closest('.phone-field') || f.phone;
+        showFieldToast(anchor, res.data.fields[field]);
+      } else {
+        showFieldToast(btn, (res.data && res.data.message) || 'Couldn’t send — please try again.');
+      }
+      return;
+    }
+    f.reset();
+    clearAttachment();
+    resetButton();
+    openSuccess();
+  }).catch(function (err) {
+    clearTimeout(timeoutId);
+    // Logged (not shown to the visitor) so a real failure reason is visible
+    // in dev tools instead of guessing — e.g. a TypeError here almost always
+    // means the request was blocked before it left the browser (the most
+    // common cause historically: this page being opened as a local file://
+    // rather than served from a real domain, which third-party APIs and
+    // this backend's own CORS policy both reject outright).
+    console.error('Consultation form send failed:', err);
+    resetButton();
+    showFieldToast(btn, 'Couldn’t send — please check your connection and try again.');
+  });
+  return false;
+}
+</script>
+</body>
+</html>

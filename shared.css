@@ -1,0 +1,784 @@
+/* ── FONTS ── */
+@font-face {
+  font-family: 'Quera';
+  src: url('assets/fonts/Quera.otf') format('opentype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Arha';
+  src: url('assets/fonts/Arha Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+/* ── TOKENS ── */
+:root {
+  --header-bg: #d9d9d9;
+  --primary:   #0c0c4a;
+  --main-bg:   #eeeef0;
+  --phrase:    #6666ff;
+  --surface:   #f5f5f7;
+  --card:      #ffffff;
+  --accent:    var(--phrase);
+  --accent-2:  #9090ff;
+  --accent-3:  #b8b8ff;
+  --muted:     #7171a7;
+  --faint:     #c0c0d8;
+  --pill:      #eeeef0;
+  --card-shadow: 0 -7px 8px rgba(255,255,255,.30), 0 7px 8px rgba(255,255,255,.30);
+
+  /* Design-frame unit: 1% of a 16:9 frame fitted inside the viewport.
+     Same aspect ratio → identical proportions at any resolution (720p…8K);
+     extreme ratios are governed by the limiting side instead of overflowing. */
+  --u: min(1vw, 1.7778vh);
+
+  /* Header hierarchy — children sized from --nav-h (spec: logo 33%, icons 28%,
+     pills 32% of header height), width-capped via --u/vw so square or short
+     viewports can never overflow horizontally. */
+  --nav-h:  max(56px, 14.5vh);
+  --logo-w: min(calc(var(--nav-h) * 2.013), 40vw);   /* 33% of header × 6.1 logo aspect */
+  --icon-s: max(24px, min(calc(var(--nav-h) * .28), calc(2.5 * var(--u))));
+  --pill-h: max(32px, calc(var(--nav-h) * .32));
+  --pill-w: max(92px, min(calc(var(--nav-h) * 1.2), calc(10 * var(--u))));
+  --pill-f: max(11px, min(calc(var(--nav-h) * .13), calc(1.05 * var(--u))));
+  --gap-in:   max(8px, calc(.878 * var(--u)));
+  --gap-logo: max(30px, calc(3.4 * var(--u)));
+  --edge:     max(28px, calc(3.4 * var(--u)));
+
+  --r-pill: 999px;
+  /* concentric with the inner capsule pills: card radius = pill radius
+     (capsule height/2 ≈ 3.4u) + card padding (2.4u) → equal offset all round */
+  --r-card: max(28px, calc(5.8 * var(--u)));
+  --r-page: max(36px, calc(6.59 * var(--u)));
+
+  /* ── TYPE SCALE ──
+     Every text rule on the site references one of these instead of inventing
+     its own multiplier — that's what kept producing accidental hierarchy
+     inversions (e.g. a section heading rendering smaller than the item
+     headings inside it). Ordered largest → smallest; redefined again in the
+     mobile media query below, so consumers never repeat a mobile override. */
+  --fs-h1:      max(24px, calc(3.3  * var(--u))); /* page title — .page-head h1 */
+  --fs-h2:      max(21px, calc(2.6  * var(--u))); /* section heading — .pg-h */
+  --fs-cta:     max(18px, calc(2    * var(--u))); /* closing-CTA prompt — .pg-cta p */
+  --fs-h3:      max(17px, calc(1.7  * var(--u))); /* card/item heading — .icard h3, .icap h3, .step h3, .step-n */
+  --fs-lead:    max(15px, calc(1.6  * var(--u))); /* intro paragraph — .pg-sub, .hero-sub, .about-lead */
+  --fs-body:    max(15px, calc(1.45 * var(--u))); /* standard copy — .icard p, .plist li, .step p */
+  --fs-note:    max(14px, calc(1.3  * var(--u))); /* secondary text — .pg-note, .chip */
+  --fs-ui:      max(13px, calc(1.33 * var(--u))); /* buttons — .pill-btn, .cta-btn */
+  --fs-caption: max(12px, calc(1.05 * var(--u))); /* footer links */
+  --fs-fine:    max(11px, calc(.95  * var(--u))); /* footer copyright */
+
+  /* Shared "light sweep" gradient — the animated highlight band used by
+     every hover/filled-state glow on the site (nav pills, buttons, chips,
+     form fields, the homepage plus icon). This one definition, parameterized
+     by --sweep-w (per-element width, set dynamically by shared.js) and
+     --sweep-opacity, replaces what used to be the same 5-line gradient
+     hand-copied at every usage site with only the opacity number changed
+     between them (.95 for a prominent button hover, .095 for a quiet
+     ambient "this is filled in" indicator — set --sweep-opacity:.095 on
+     whichever selector wants the quiet version). */
+  --sweep-opacity: .95;
+  --sweep-gradient: linear-gradient(100deg,
+    transparent 0%, transparent calc(50% - var(--sweep-w, 18px)),
+    rgba(255,255,255, var(--sweep-opacity)) 50%,
+    transparent calc(50% + var(--sweep-w, 18px)), transparent 100%);
+}
+/* svh = stable viewport height: header/hero don't resize when the phone's URL bar hides */
+@supports (height: 1svh) {
+  :root { --u: min(1vw, 1.7778svh); --nav-h: max(56px, 14.5svh); }
+}
+[data-dark] {
+  --header-bg: #1e1e47;
+  --primary:   #eeeef0;
+  --main-bg:   #0c0c1e;
+  --phrase:    #6666ff;
+  --surface:   #0f0f26;
+  --card:      #181832;
+  --accent:    var(--phrase);
+  --accent-2:  #9090ff;
+  --accent-3:  #b8b8ff;
+  --muted:     #d9d9d9;
+  --faint:     #303060;
+  --pill:      #0c0c1e;
+  --card-shadow: 0 -7px 8px rgba(0,0,0,.30), 0 7px 8px rgba(0,0,0,.30);
+}
+
+/* ── RESET ── */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior:smooth }
+button, a { touch-action: manipulation; }
+body {
+  font-family: 'Arha', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--header-bg);
+  color: var(--primary);
+  line-height: 1.6;
+  transition: background .3s, color .3s;
+}
+
+/* ── QUERA HEADINGS ── */
+h1, h2, h3, h4,
+.hero-head, .logo-word,
+.step-n {
+  font-family: 'Quera', sans-serif;
+}
+
+/* ── NAV ── */
+nav {
+  position: relative;
+  background: var(--header-bg);
+  height: var(--nav-h);
+  padding-left:  max(var(--edge), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--edge), env(safe-area-inset-right, 0px));
+  display: flex; align-items: center;
+  transition: background .3s;
+}
+.nav-left  { display:flex; gap:var(--gap-in); flex:1; justify-content:flex-end;
+             padding-right: calc(var(--logo-w) / 2 + var(--gap-logo)) }
+.nav-right { display:flex; align-items:center; gap:var(--gap-in); flex:1; justify-content:flex-start;
+             padding-left:  calc(var(--logo-w) / 2 + var(--gap-logo)) }
+.nav-pill {
+  background: var(--pill); border: none; border-radius: var(--r-pill);
+  height: var(--pill-h); line-height: 1;
+  width: var(--pill-w); justify-content: center;
+  font-size: var(--pill-f); color: var(--primary);
+  cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; font-family: 'Arha', sans-serif;
+  transition: transform .15s;
+}
+.nav-pill:hover { transform: translateY(-1px); }
+
+/* Home pill — inverted colors so it's instantly recognisable on any sub-page.
+   --primary/--main-bg already flip per-theme via the token system in :root
+   vs [data-dark], so this alone covers both themes — no separate
+   [data-dark] override needed (a prior version had one that duplicated
+   these same two declarations verbatim, which changed nothing). */
+.nav-pill-home {
+  background: var(--primary);
+  color: var(--main-bg);
+}
+
+.logo {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  text-decoration: none; display: block; line-height: 0;
+}
+.logo-img {
+  /* Height-driven per spec (33% of header height, via --logo-w = height × 6.1
+     logo aspect), width-capped at 40vw so narrow windows can't overflow */
+  width: var(--logo-w);
+  height: auto; display: block;
+}
+[data-dark] .logo-img        { content: url("assets/img/logo-dark.svg"); }
+[data-dark] .theme-icon      { content: url("assets/img/sun-icon.svg"); }
+[data-dark] .ham-icon        { content: url("assets/img/menu-icon-dark.svg"); }
+[data-dark] .cross-icon      { content: url("assets/img/menu-cross-dark.svg"); }
+
+.dark-btn {
+  background: transparent; border: none; padding: 0;
+  width: var(--icon-s); height: var(--icon-s);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; margin-left: auto;
+  transition: transform .2s; flex-shrink: 0;
+}
+.dark-btn:hover { transform: rotate(20deg) }
+.dark-btn img { width: 100%; height: 100%; display: block; }
+
+.ham-btn {
+  display: none; background: transparent; border: none; padding: 0;
+  width: var(--icon-s); height: var(--icon-s);
+  align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+.ham-btn img { width: 100%; height: 100%; display: block; }
+
+/* ── MOBILE MENU ── */
+@keyframes _mmask-in  { from { opacity: 0 } to { opacity: 1 } }
+/* bubbly "giggle" pop — overshoots scale and wobbles a couple degrees of
+   rotation before settling, like an iOS/macOS bubble popping in */
+@keyframes _mmcard-in {
+  0%   { opacity: 0; transform: scale(.4)   rotate(-8deg); }
+  50%  { opacity: 1; transform: scale(1.06) rotate(4deg); }
+  70%  {             transform: scale(.97)  rotate(-2deg); }
+  85%  {             transform: scale(1.02) rotate(1deg); }
+  100% {             transform: scale(1)    rotate(0deg); }
+}
+@keyframes _mmlink-in { from { opacity: 0; transform: translateY(7px) scale(.94) } to { opacity: 1; transform: translateY(0) scale(1) } }
+
+.mmask {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,.20);
+  padding: max(10px, calc(2.564 * var(--u)));
+}
+.mmask.open {
+  display: block;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  animation: _mmask-in 200ms ease both;
+}
+.mmask.open .mmcard {
+  transform-origin: top left;
+  animation: _mmcard-in 550ms ease-in-out both;
+}
+.mmask.open .mmlinks a {
+  animation: _mmlink-in 220ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+.mmask.open .mmlinks a:nth-child(1) { animation-delay:  70ms }
+.mmask.open .mmlinks a:nth-child(2) { animation-delay: 105ms }
+.mmask.open .mmlinks a:nth-child(3) { animation-delay: 140ms }
+.mmask.open .mmlinks a:nth-child(4) { animation-delay: 175ms }
+
+@keyframes _mmask-out  { from { opacity: 1 } to { opacity: 0 } }
+@keyframes _mmcard-out { from { opacity: 1; transform: scale(1) } to { opacity: 0; transform: scale(0.82) } }
+@keyframes _mmlink-out { from { opacity: 1; transform: translateY(0) } to { opacity: 0; transform: translateY(5px) } }
+
+.mmask.closing {
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  animation: _mmask-out 180ms ease both;
+}
+.mmask.closing .mmcard {
+  transform-origin: top left;
+  animation: _mmcard-out 160ms cubic-bezier(0.4, 0, 0.6, 1) both;
+}
+.mmask.closing .mmlinks a {
+  animation: _mmlink-out 110ms ease both;
+}
+.mmask.closing .mmlinks a:nth-child(4) { animation-delay:  0ms }
+.mmask.closing .mmlinks a:nth-child(3) { animation-delay: 20ms }
+.mmask.closing .mmlinks a:nth-child(2) { animation-delay: 40ms }
+.mmask.closing .mmlinks a:nth-child(1) { animation-delay: 60ms }
+.mmcard {
+  background: var(--surface);
+  border-radius: max(22px, calc(5.641 * var(--u)));
+  padding: max(14px, calc(6.154 * var(--u))) max(20px, calc(8.205 * var(--u))) max(28px, calc(12.308 * var(--u)));
+  width: 100%; position: relative;
+  border: 1.5px solid var(--header-bg);
+}
+.mmclose {
+  position: absolute;
+  top: max(12px, calc(3.077 * var(--u))); right: max(16px, calc(6.667 * var(--u)));
+  background: none; border: none; padding: 0;
+  width: max(30px, calc(9.2 * var(--u))); height: max(30px, calc(9.2 * var(--u)));
+  cursor: pointer;
+}
+.mmclose img { width: 100%; height: 100%; display: block; }
+.mmlinks {
+  display: flex; flex-direction: column;
+  margin-top: max(8px, calc(2.051 * var(--u)));
+  /* Reset styles leaked from the global `nav` rule */
+  position: static;
+  background: transparent;
+  height: auto;
+  padding: 0;
+  align-items: flex-start;
+  transition: none;
+}
+.mmlinks a {
+  font-size: max(15px, calc(5.128 * var(--u)));
+  line-height: 1;
+  font-weight: 400; color: var(--primary); text-decoration: none;
+  padding: max(10px, calc(4.103 * var(--u))) 0;
+  transition: color .2s;
+}
+.mmlinks a:hover { color: var(--accent); }
+.mmlink-home { color: var(--accent) !important; }
+
+/* ── ZIG-ZAG SEPARATOR ──
+   Dotted smooth wave in accent color, fading into the page background at
+   both edges (design: #eeeef0 → #6666ff → #eeeef0 gradient stroke).
+   Tile geometry taken 1:1 from the design SVGs. */
+.sep {
+  height: calc(1.4 * var(--u));
+  opacity: 1;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 50%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 50%, transparent);
+}
+.sep svg { display: block; width: 100%; height: 100% }
+.sep .sep-mob { display: none }
+/* Dots crawl along the wavy path (dash-offset) — snakes over the curves */
+.sep path {
+  /* light mode: header color alone is near-invisible on the page bg —
+     strengthened 60% toward primary (opacity is already at 1) */
+  fill: none; stroke: color-mix(in srgb, var(--primary) 60%, var(--header-bg));
+  stroke-linecap: round;
+  animation: sep-crawl-w 1.4s linear infinite;
+}
+[data-dark] .sep path { stroke: var(--header-bg) }
+.sep-web path { stroke-width: 1.86; stroke-dasharray: 9.28 }
+/* Mobile: the whole dashed wave glides sideways one period per loop —
+   pure composited transform, the only animation iOS runs perfectly smooth.
+   dasharray 2.772 = period arc ÷ 14, so the loop wraps seamlessly. */
+.sep-mob path {
+  stroke-width: .59; stroke-dasharray: 2.772;
+  animation: sep-slither 3.2s linear infinite;
+}
+@keyframes sep-crawl-w { to { stroke-dashoffset: -18.56 } }
+@keyframes sep-slither { to { transform: translateX(35.77px) } }
+
+/* ── PAGE CARD ── */
+.page-card {
+  position: relative;
+  background: var(--main-bg);
+  border-radius: var(--r-page);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  /* symmetric section rhythm (same token the homepage uses) */
+  --gap: calc(10.45 * var(--u));
+}
+
+/* ── PAGE HEAD (About / Contact / Services / Industries / Privacy / Terms) ── */
+.page-head {
+  display: flex; flex-direction: column;
+  align-items: center;
+  text-align: center;
+  /* same header→content distance as the homepage rhythm */
+  padding: var(--gap) max(40px, calc(5.858 * var(--u))) 0;
+}
+.page-head h1 {
+  /* homepage section-title scale (hero > page title = section title) */
+  font-size: var(--fs-h1);
+  font-weight: 600; line-height: 1.25;
+  color: var(--primary);
+}
+@media (orientation: portrait), (max-width: 700px) {
+  .page-head { padding: var(--gap) max(18px, calc(7 * var(--u))) 0 }
+}
+
+/* ── CONTENT PAGES (services / consult / policies / about) ── */
+.pg {
+  max-width: calc(94 * var(--u));
+  margin: 0 auto;
+  /* inner rhythm: each section sits .62 gap from its bounding zig-zags */
+  padding: calc(var(--gap) * .62) max(18px, calc(4 * var(--u)));
+}
+.pg-sub {
+  max-width: calc(58 * var(--u)); min-width: min(100%, 520px);
+  margin: max(14px, calc(2.4 * var(--u))) auto 0; /* home heading→sub gap */
+  font-size: var(--fs-lead);     /* home hero-sub size */
+  line-height: 1.75; color: var(--muted); text-align: center;
+  text-wrap: balance;
+}
+.pg-sec { margin-top: 0 }
+.pg-h {
+  font-size: var(--fs-h2);
+  font-weight: 600; color: var(--primary);
+  text-align: center; line-height: 1.25;
+  margin-bottom: max(20px, calc(4.5 * var(--u))); /* home title→cards gap */
+}
+.pg-note {
+  max-width: calc(58 * var(--u));
+  margin: max(24px, calc(3.4 * var(--u))) auto 0;
+  font-size: var(--fs-note);
+  line-height: 1.7; color: var(--muted); text-align: center;
+}
+
+/* info card grid */
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(34 * var(--u))), 1fr));
+  gap: max(18px, calc(2.2 * var(--u)));
+}
+.icard {
+  background: var(--header-bg);
+  border-radius: var(--r-card);
+  padding: max(20px, calc(2.4 * var(--u)));
+  text-align: center; /* home cards center their copy */
+  transition: background .3s;
+}
+.icard h3 {
+  font-size: var(--fs-h3);
+  font-weight: 600; color: var(--primary); line-height: 1.15;
+  margin-bottom: max(12px, calc(1.3 * var(--u)));
+}
+/* icon-less cards: title becomes a main-bg pill — echoes the home capsules
+   (full-width flex, same as .icap below — not shrink-wrapped to the text).
+   Vertical padding is solved so the pill's own radius (height/2, from the
+   999px border-radius) plus the card's padding exactly equals --r-card —
+   the same concentric relationship --r-card's own comment describes above.
+   Solving for padding: total pill height = 2 * (r-card - card padding);
+   text already contributes 1.15em (line-height) of that, so each side gets
+   (r-card - card padding - 0.575em). Written as one calc so it self-adjusts
+   for both --r-card and --u across web/mobile format without a duplicate
+   mobile override. */
+.icard > h3:first-child {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--main-bg);
+  border-radius: 999px;
+  padding: max(14px, calc(var(--r-card) - max(20px, calc(2.4 * var(--u))) - 0.575em)) max(24px, calc(3 * var(--u)));
+  margin-bottom: max(18px, calc(2.2 * var(--u)));
+  transition: background .3s;
+}
+.icard p {
+  font-size: var(--fs-body);
+  line-height: 1.7; color: var(--muted);
+}
+/* capsule header (icon + name) inside a card — mirrors the homepage capsules:
+   generous icon inset and icon↔name gap, icon ≈ 50% of pill height like home */
+.icap {
+  display: flex; align-items: center;
+  gap: max(16px, calc(2.4 * var(--u)));
+  background: var(--main-bg);
+  border-radius: 999px;
+  padding: max(14px, calc(1.7 * var(--u))) max(24px, calc(3 * var(--u)));
+  margin-bottom: max(18px, calc(2.2 * var(--u)));
+  transition: background .3s;
+}
+.icap svg { width: max(32px, calc(3.4 * var(--u))); height: auto; flex-shrink: 0; color: var(--primary) }
+.icap h3 { margin: 0; line-height: 1.15 }
+
+/* accent "+" lists — block centered in the card, text left-aligned so all
+   the "+" markers sit in one column (hanging indent covers wrapped lines) */
+.plist {
+  list-style: none;
+  display: inline-block; text-align: left;
+  max-width: 100%;
+}
+.plist li {
+  position: relative;
+  padding: max(5px, calc(.55 * var(--u))) 0 max(5px, calc(.55 * var(--u))) 1.25em;
+  font-size: var(--fs-body);
+  line-height: 1.6; color: var(--muted);
+}
+.plist li::before {
+  content: "+"; color: var(--phrase); font-weight: 700;
+  position: absolute; left: 0;
+}
+
+/* pill chips (industries, popular requests) */
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: max(12px, calc(1.4 * var(--u))) }
+.chip {
+  background: var(--header-bg); color: var(--primary);
+  border-radius: 999px;
+  padding: max(9px, calc(.85 * var(--u))) max(20px, calc(2 * var(--u)));
+  font-size: var(--fs-note);
+  transition: background .3s, color .3s;
+  position: relative; isolation: isolate; cursor: pointer;
+  --sweep-w: 14px;
+}
+/* Tapping a chip toggles a highlighted state (click handler in shared.js) —
+   accent fill + the same quiet sheen as the consult form's filled fields
+   (see consult.html's "FILLED-FIELD GLOW"), not the loud button version;
+   these are decorative tags, not calls to action, so the shine stays subtle. */
+.chip.active { background: var(--phrase); color: #eeeef0; --sweep-opacity: .095; }
+.chip.active::before {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  border-radius: inherit;
+  background: var(--sweep-gradient);
+  background-size: 300% 100%; background-repeat: no-repeat; background-position-x: -150%;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  animation: btn-sheen 3.6s linear infinite;
+}
+
+/* numbered steps — centered stacks, like the homepage's centered language */
+.steps { max-width: calc(58 * var(--u)); margin: 0 auto; display: flex; flex-direction: column; gap: max(26px, calc(3.2 * var(--u))) }
+.step {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: max(8px, calc(.8 * var(--u)));
+}
+/* number + heading share one row instead of the number sitting on its own line above —
+   same size and line-height on both so they align cleanly, not just by baseline guesswork */
+.step-head {
+  display: flex; align-items: center; justify-content: center;
+  gap: max(5px, calc(.5 * var(--u)));
+}
+.step-n {
+  font-family: 'Quera', sans-serif;
+  font-size: var(--fs-h3);
+  color: var(--phrase); line-height: 1;
+}
+.step h3 { font-size: var(--fs-h3); line-height: 1; color: var(--primary); margin: 0; }
+.step p { font-size: var(--fs-body); line-height: 1.65; color: var(--muted) }
+
+/* featured (inverted) card — e.g. Growth package */
+.icard.feat { background: var(--primary) }
+.icard.feat h3 { color: var(--main-bg) }
+.icard.feat p, .icard.feat .plist li { color: color-mix(in srgb, var(--main-bg) 72%, var(--primary)) }
+
+/* primary pill button — same metrics as the homepage CTA button */
+.pill-btn {
+  display: inline-flex; align-items: center;
+  background: var(--primary); color: var(--main-bg);
+  border-radius: 999px; text-decoration: none;
+  padding: max(8px, calc(.84 * var(--u))) max(20px, calc(2.8 * var(--u)));
+  font-size: var(--fs-ui);
+  font-family: 'Arha', sans-serif;
+  transition: transform .15s, opacity .2s;
+}
+.pill-btn:hover { transform: translateY(-1px); opacity: .88 }
+
+/* closing CTA row after the zig-zag — same inner rhythm as the other seps */
+.pg-cta { text-align: center; padding-top: calc(var(--gap) * .62) }
+.pg-cta p {
+  font-size: var(--fs-cta);
+  color: var(--primary); font-family: 'Quera', sans-serif;
+  margin-bottom: max(24px, calc(2.8 * var(--u)));
+}
+
+/* placeholder marker for details still to be filled in — quiet, small */
+.tbd {
+  color: var(--muted); opacity: .55; font-size: .85em;
+  border-bottom: 1px dashed var(--muted); cursor: help;
+}
+
+/* accent (#6666ff) is always animated on this site: soft staggered breathing
+   on markers/numbers (composited opacity), interactive pop on icons/links */
+@keyframes accent-breathe { 0%, 100% { opacity: 1 } 50% { opacity: .45 } }
+.plist li::before { display: inline-block; animation: accent-breathe 3.6s ease-in-out infinite }
+.plist li:nth-child(2)::before { animation-delay: .45s }
+.plist li:nth-child(3)::before { animation-delay: .9s }
+.plist li:nth-child(4)::before { animation-delay: 1.35s }
+.plist li:nth-child(5)::before { animation-delay: 1.8s }
+.step-n { display: inline-block; animation: accent-breathe 3.6s ease-in-out infinite }
+.step:nth-child(2) .step-n { animation-delay: .45s }
+.step:nth-child(3) .step-n { animation-delay: .9s }
+.step:nth-child(4) .step-n { animation-delay: 1.35s }
+.step:nth-child(5) .step-n { animation-delay: 1.8s }
+.icap svg { transition: transform .3s }
+.icard:hover .icap svg, .icard:active .icap svg { transform: scale(1.08) }
+.alink {
+  color: var(--phrase); text-decoration: none;
+  background: linear-gradient(var(--phrase), var(--phrase)) 0 100% / 0% 1.5px no-repeat;
+  transition: background-size .3s;
+}
+.alink:hover { background-size: 100% 1.5px }
+
+/* plain-text email addresses: accent color + Quera + the site's standard
+   accent-breathe pulse — the surrounding sentence stays Arha/muted */
+.email-accent {
+  font-family: 'Quera', sans-serif;
+  color: var(--phrase); text-decoration: none;
+  animation: accent-breathe 3.6s ease-in-out infinite;
+  background: linear-gradient(var(--phrase), var(--phrase)) 0 100% / 0% 1.5px no-repeat;
+  transition: background-size .3s;
+}
+.email-accent:hover { background-size: 100% 1.5px }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--header-bg);
+  padding: max(28px,3.5vh) max(40px, calc(5.857 * var(--u)));
+  padding-bottom: max(28px, 3.5vh, env(safe-area-inset-bottom, 0px));
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: max(20px, calc(1.464 * var(--u)));
+  transition: background .3s;
+}
+.foot-logo { text-decoration: none; display: block; line-height: 0; }
+.foot-logo .logo-img { max-width: max(100px, calc(11.72 * var(--u))); }
+.foot-links { display: flex; gap: max(22px, calc(1.611 * var(--u))); flex-wrap: wrap }
+.foot-links a { font-size: var(--fs-caption); color: var(--muted); text-decoration: none; transition: color .2s }
+.foot-links a:hover { color: var(--accent) }
+.foot-copy { font-size: var(--fs-fine); color: color-mix(in srgb, var(--primary) 65%, var(--header-bg)) }
+
+/* ── MOBILE FORMAT (spec: portrait orientation) + tiny-landscape guard ── */
+@media (orientation: portrait), (max-width: 700px) {
+  :root {
+    --u: min(1vw, .4621vh);                             /* 390×844 design frame */
+    --nav-h: max(48px, 12vh);                           /* spec: 12% of viewport height */
+    --logo-w: min(calc(var(--nav-h) * 1.83), 46vw);   /* 30% of header × 6.1 aspect (upsized for phone legibility) */
+    --icon-s: max(28px, min(calc(var(--nav-h) * .30), calc(8.5 * var(--u))));
+    --edge:   max(34px, calc(8.718 * var(--u)));
+    --r-page: max(36px, calc(12.82 * var(--u)));
+    --r-card: max(32px, calc(13.3 * var(--u)));
+
+    /* type scale — mobile multipliers; every consumer above just references
+       var(--fs-*), so redefining the token here is the only override needed */
+    --fs-h1:      max(23px, calc(8.2 * var(--u)));
+    --fs-h2:      max(20px, calc(6.4 * var(--u)));
+    --fs-cta:     max(18px, calc(5   * var(--u)));
+    --fs-h3:      max(17px, calc(4.6 * var(--u)));
+    --fs-lead:    max(14px, calc(4.3 * var(--u)));
+    --fs-body:    max(15px, calc(4.1 * var(--u)));
+    --fs-note:    max(14px, calc(3.7 * var(--u)));
+    --fs-ui:      max(12px, calc(2.7 * var(--u)));
+    --fs-caption: max(11px, calc(4.1 * var(--u)));
+    --fs-fine:    max(11px, calc(3.1 * var(--u)));
+  }
+  .page-card { --gap: calc(24.6 * var(--u)) }
+
+  /* content pages: mobile type scale */
+  .pg { max-width: none }
+  .steps { max-width: none }
+  /* side-by-side cards become a free horizontal swipe row — the same
+     pattern as the homepage services section */
+  .grid2 {
+    display: flex; overflow-x: auto;
+    scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    gap: calc(4.5 * var(--u));
+    margin-inline: calc(-1 * max(18px, 4 * var(--u)));
+    padding-inline: max(18px, calc(4 * var(--u)));
+  }
+  .grid2::-webkit-scrollbar { display: none }
+  .grid2 > * { flex: 0 0 calc(78 * var(--u)) }
+  .pg-sub { max-width: none; min-width: 0; margin-top: max(12px, calc(5 * var(--u))) }
+  .pg-h { margin-bottom: calc(6 * var(--u)) }
+  .pg-note { max-width: none }
+  .icap { gap: max(14px, calc(4 * var(--u))); padding: max(14px, calc(3.9 * var(--u))) max(24px, calc(5.6 * var(--u))) }
+  .icap svg { width: max(32px, calc(8.6 * var(--u))) }
+  .chips { gap: max(12px, calc(3.2 * var(--u))) }
+  .pill-btn { padding: max(8px, calc(.98 * var(--u))) max(20px, calc(4.2 * var(--u))); min-height: 32px }
+  @supports (height: 1svh) {
+    :root { --u: min(1vw, .4621svh); --nav-h: max(48px, 12svh); }
+  }
+  .nav-left { display: none }
+  .nav-right { padding-left: 0 }
+  .nav-right .nav-pill { display: none }
+  .ham-btn { display: flex }
+
+  /* Finer wave on the mobile design (period 35.77 × amp 6.43 at 430px frame).
+     No mask here — WebKit skips repaints of animated children under
+     mask-image (the "frozen animation" iOS bug); edge fade uses page-colored
+     overlay gradients instead, which look identical. */
+  .sep {
+    height: calc(2.2 * var(--u));
+    -webkit-mask-image: none; mask-image: none;
+    position: relative;
+  }
+  .sep::before, .sep::after {
+    content: ""; position: absolute; top: 0; bottom: 0; width: 22%;
+    z-index: 1; pointer-events: none;
+  }
+  .sep::before { left: 0; background: linear-gradient(90deg, var(--main-bg), transparent) }
+  .sep::after { right: 0; background: linear-gradient(270deg, var(--main-bg), transparent) }
+  .sep svg { transform: translateZ(0) }
+  .sep .sep-web { display: none }
+  .sep .sep-mob { display: block }
+
+  footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+    column-gap: max(16px, calc(4.103 * var(--u)));
+    row-gap: max(20px, calc(8.205 * var(--u)));
+    padding: max(24px, calc(6.154 * var(--u))) max(28px, calc(7.179 * var(--u)));
+  }
+
+  /* Row 1: screen split into thirds — each item centred in its own third,
+     so privacy/terms sit at the midpoint between the screen edge and the logo */
+  .foot-logo {
+    grid-row: 1; grid-column: 2; justify-self: center;
+  }
+  .foot-logo .logo-img {
+    content: url("assets/img/mini-logo-light.svg");
+    width: max(20px, calc(5.2 * var(--u))); max-width: none; height: auto;
+  }
+  [data-dark] .foot-logo .logo-img { content: url("assets/img/mini-logo-dark.svg"); }
+
+  .foot-links { display: contents }
+  .foot-links a:not(.foot-legal-link) { display: none }
+  .foot-legal-link { white-space: nowrap }
+  .foot-privacy { grid-row: 1; grid-column: 1; justify-self: center }
+  .foot-terms   { grid-row: 1; grid-column: 3; justify-self: center }
+
+  /* Row 2: copyright, centred, -20% size */
+  .foot-copy {
+    grid-row: 2; grid-column: 1 / -1; justify-self: center;
+    text-align: center;
+  }
+}
+
+/* ── MINI LOGO (ultra-narrow viewports) ── */
+@media (max-width: 250px) {
+  .logo-img {
+    content: url("assets/img/mini-logo-light.svg");
+    width: clamp(22px, 9vw, 34px);
+    max-height: calc(var(--nav-h) * 0.5);
+  }
+  [data-dark] .logo-img { content: url("assets/img/mini-logo-dark.svg"); }
+  /* Let "Privacy Policy" / "Service Terms" wrap — nowrap can't fit a 1/3 column here */
+  .foot-legal-link { white-space: normal }
+}
+
+/* ── UNIVERSAL BUTTON HOVER GLOW ──
+   Every button-styled control — nav pills, CTA/submit/file/dialog buttons —
+   turns accent-colored on hover, no matter its own base colors or which
+   theme is active (light/dark), plus a soft white sheen wraps around it on
+   a seamless loop for as long as the hover lasts.
+   --sweep-w (the sheen's physical width) defaults here but is overwritten
+   per-button by assets/js/shared.js, which measures each button's actual
+   rendered box and sizes the sheen off of it — so a wide nav pill gets a
+   proportionally wider light than a small dialog button, dynamically,
+   without hand-tuning a value per class.
+   No overflow:hidden here (unlike an earlier version of this effect) — that
+   would clip the ::after tap-area expansion below. Instead the sweep clips
+   itself via border-radius:inherit, and background-position (not
+   transform:translateX) animates it, tiling seamlessly with no reset jump
+   — that's the "wrap around" instead of a single pass-and-snap-back. */
+.nav-pill, .pill-btn, .cta-btn, .submit-btn, .filepick-btn,
+.confirm-cancel, .confirm-proceed {
+  position: relative; isolation: isolate;
+  --sweep-w: 18px;
+}
+.nav-pill:hover, .nav-pill:focus-visible,
+.pill-btn:hover, .pill-btn:focus-visible,
+.cta-btn:hover, .cta-btn:focus-visible,
+.submit-btn:hover, .submit-btn:focus-visible,
+.filepick-btn:hover, .filepick-btn:focus-visible,
+.confirm-cancel:hover, .confirm-cancel:focus-visible,
+.confirm-proceed:hover, .confirm-proceed:focus-visible {
+  background: var(--phrase) !important;
+  color: #eeeef0 !important;
+}
+.nav-pill::before, .pill-btn::before, .cta-btn::before, .submit-btn::before,
+.filepick-btn::before, .confirm-cancel::before, .confirm-proceed::before {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  border-radius: inherit;
+  /* single band, no tiling — background-repeat:repeat + a 0%->100% position
+     animation (an earlier version) doesn't land on an exact multiple of the
+     tile period, so the loop restart didn't match visually, causing a
+     jump/pop at the seam. This way each cycle starts and ends with the
+     bright band pushed fully off-screen, both "invisible" states identical,
+     so the reset between loops is imperceptible. */
+  background: var(--sweep-gradient);
+  background-size: 300% 100%;
+  background-repeat: no-repeat;
+  background-position-x: 150%;
+  filter: blur(5px);
+  mix-blend-mode: overlay;
+  opacity: 0;
+  pointer-events: none;
+}
+.nav-pill:hover::before, .nav-pill:focus-visible::before,
+.pill-btn:hover::before, .pill-btn:focus-visible::before,
+.cta-btn:hover::before, .cta-btn:focus-visible::before,
+.submit-btn:hover::before, .submit-btn:focus-visible::before,
+.filepick-btn:hover::before, .filepick-btn:focus-visible::before,
+.confirm-cancel:hover::before, .confirm-cancel:focus-visible::before,
+.confirm-proceed:hover::before, .confirm-proceed:focus-visible::before {
+  opacity: 1;
+  animation: btn-sheen 1.8s linear infinite; /* halved back down from .9s — too fast on web */
+}
+/* at background-size:300%, position -150% -> 150% puts the band's center at
+   +450% (off-screen right) at the start, sweeps it through 0%-100% right-
+   to-left around the midpoint, and leaves it at -150% (off-screen left) at
+   the end — matches the original sweep direction; the previous version of
+   this fix had the two values swapped, which reversed it left-to-right. */
+@keyframes btn-sheen {
+  0%   { background-position-x: -150%; }
+  100% { background-position-x: 150%; }
+}
+
+/* ── ACCESSIBILITY REFINEMENTS ── */
+/* Same animations for everyone else; users who ask the OS for reduced motion
+   get instant state changes instead of the dust / menu choreography */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto }
+  .sep path { animation: none }
+  .plist li::before, .step-n, .email-accent { animation: none !important }
+  .mmask.open, .mmask.closing,
+  .mmask.open .mmcard, .mmask.closing .mmcard,
+  .mmask.open .mmlinks a, .mmask.closing .mmlinks a,
+  .dc { animation-duration: 1ms !important; animation-delay: 0ms !important }
+  /* keep the hover color change, drop the moving sheen */
+  .nav-pill::before, .pill-btn::before, .cta-btn::before, .submit-btn::before,
+  .filepick-btn::before, .confirm-cancel::before, .confirm-proceed::before,
+  .chip.active::before { animation: none !important }
+}
+
+/* Bigger tap areas on touch devices — invisible, no visual size change */
+@media (pointer: coarse) {
+  .dark-btn, .ham-btn, .nav-pill, .pill-btn { position: relative }
+  .dark-btn::after, .ham-btn::after, .mmclose::after, .pill-btn::after { content: ""; position: absolute; inset: -8px }
+  .nav-pill::after { content: ""; position: absolute; inset: -4px }
+}

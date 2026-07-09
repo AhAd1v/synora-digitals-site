@@ -1,0 +1,12 @@
+# Claude Code local session/tool state — not meant for version control
+.claude/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Backend secrets/local env — belt-and-suspenders alongside backend/.gitignore
+**/.env
+**/__pycache__/
+**/venv/
+**/*.pyc

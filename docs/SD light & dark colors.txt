@@ -1,0 +1,24 @@
+Light mode:
+
+txt and logo color: #0c0c4a
+header color: #d9d9d9
+Main pg bg color: #eeeef0
+Header pills color: #eeeef0
+animated text: #6666ff
+Shadow casted by main pg : #ffffff
+
+Dark mode:
+
+txt and logo color: #eeeef0
+header color: #1e1e47
+Main pg bg color: #0c0c1e
+Header pills color: #0c0c1e
+animated text: #6666ff
+Shadow casted by main pg : #000000
+
+Color replacements (light → dark):
+#0c0c4a  →  #eeeef0   (text, logo — #0c0c4a does not appear in dark mode)
+#d9d9d9  →  #1e1e47   (header background)
+#eeeef0  →  #0c0c1e   (page background, pills)
+#ffffff  →  #000000   (shadow)
+#6666ff  →  #6666ff   (accent, unchanged)
