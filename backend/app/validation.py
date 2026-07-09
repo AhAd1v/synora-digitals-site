@@ -29,7 +29,10 @@ PHONE_DIGIT_RANGES = {
     "+48": (9, 9), "+351": (9, 9), "+1": (10, 10), "+52": (10, 10), "+7": (10, 10),
 }
 
-MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024
+# 4MB, not 10MB — matches consult.html's client-side MAX_ATTACHMENT; kept
+# safely under Vercel's ~4.5MB serverless request-body cap (see api/index.py)
+# so a file that passes this check is never rejected by the platform itself.
+MAX_ATTACHMENT_BYTES = 4 * 1024 * 1024
 ALLOWED_EXTENSIONS = {"pdf", "doc", "docx", "txt", "xls", "xlsx", "csv"}
 
 

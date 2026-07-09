@@ -1,0 +1,14 @@
+# Vercel-specific dependency list for api/index.py — Vercel's Python runtime
+# requires requirements.txt at the project root, so this can't just be a
+# symlink to backend/requirements.txt. Kept manually in sync with it (same
+# versions), minus the deployment-path-specific extras that don't apply
+# here: uvicorn (Vercel's own runtime invokes the ASGI app directly, no dev
+# server needed) and a2wsgi (that's only for the cPanel/Passenger WSGI path).
+fastapi==0.115.6
+python-multipart==0.0.20
+httpx==0.28.1
+slowapi==0.1.9
+python-dotenv==1.0.1
+pydantic==2.10.4
+pydantic-settings==2.7.1
+email-validator==2.2.0

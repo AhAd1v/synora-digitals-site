@@ -89,7 +89,7 @@ async def submit_consult(
             # bypassing the page entirely would not.
             attachment_bytes = await attachment.read(MAX_ATTACHMENT_BYTES + 1)
             if len(attachment_bytes) > MAX_ATTACHMENT_BYTES:
-                fields["attachment"] = "That file is over 10MB — please attach something smaller."
+                fields["attachment"] = "That file is over 4MB — please attach something smaller."
 
     if fields:
         return JSONResponse(

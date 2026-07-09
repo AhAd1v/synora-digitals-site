@@ -540,7 +540,7 @@
 
         <div class="filedrop" id="fileDrop">
           <svg class="filedrop-ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 15V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v3a2 2 0 002 2h10a2 2 0 002-2v-3"/></svg>
-          <p class="filedrop-text">Drag &amp; drop your requirement / reference document (up to 10MB)</p>
+          <p class="filedrop-text">Drag &amp; drop your requirement / reference document (up to 4MB)</p>
           <label class="filepick-btn" for="attachmentInput">Choose a File</label>
           <span class="filepicked" id="filePicked">
             <span class="filepick-name" id="attachmentName"></span>
@@ -657,7 +657,12 @@ function proceedSubmitWithoutFile() {
 }
 
 // ── FILE ATTACHMENT (click-to-choose + drag-and-drop) ──
-var MAX_ATTACHMENT = 10 * 1024 * 1024; // 10MB
+// 4MB, not 10MB — Vercel's serverless functions (hosting the backend, see
+// api/index.py) cap the whole request body around 4.5MB on the free tier;
+// 4MB leaves headroom for the rest of the form's fields/multipart overhead
+// so an attachment that passes this check never gets rejected by the
+// platform itself with a confusing, unexplained failure.
+var MAX_ATTACHMENT = 4 * 1024 * 1024;
 var ALLOWED_EXT = ['pdf', 'doc', 'docx', 'txt', 'xls', 'xlsx', 'csv'];
 var ALLOWED_MIME = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   'text/plain', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'];
@@ -777,7 +782,7 @@ function handleAttachment() {
   }
   if (file.size > MAX_ATTACHMENT) {
     clearAttachment();
-    showFieldToast(fileDrop, 'That file is over 10MB — please attach something smaller.');
+    showFieldToast(fileDrop, 'That file is over 4MB — please attach something smaller.');
     return;
   }
   lastAttachedMeta = { name: file.name, size: file.size, lastModified: file.lastModified };
@@ -904,10 +909,11 @@ function sendConsult(f) {
 // only the one thing that genuinely can't come from the server, the
 // visitor's local time, is included, for human context only.
 //
-// CONSULT_API_URL is the one thing that MUST be updated once the backend
-// is actually deployed — see backend/README.md for the two deployment
-// paths and what this should point to in each case.
-var CONSULT_API_URL = 'https://api.synoradigitals.com/api/consult'; // ← placeholder, replace once the backend is deployed
+// Relative path, not an absolute URL — on Vercel the static site and the
+// api/ function deploy together as one project, so this is same-origin
+// (no CORS at all). Only needs to become an absolute URL if the backend
+// ever moves to a separately-hosted path instead (see backend/README.md).
+var CONSULT_API_URL = '/api/consult';
 
 function doSend(f) {
   var btn = f.querySelector('.submit-btn');

@@ -1,3 +1,6 @@
+# For local dev + the generic-ASGI-host and cPanel deployment paths (see
+# README.md). Vercel deploys use the separate, trimmed ../requirements.txt
+# instead (Vercel requires it at the project root) — keep both in sync.
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
 python-multipart==0.0.20

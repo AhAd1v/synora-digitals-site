@@ -2,7 +2,7 @@
 
 A small FastAPI backend that replaces the old third-party FormSubmit.co relay. It receives the consultation form's submission, validates it server-side (never trust the client alone), rejects spam via a honeypot field, rate-limits abuse, and sends the email through [Resend](https://resend.com).
 
-This is a separate deployable unit from the static site (`index.html` etc.) — it does not need to live in the same webroot, and can be hosted independently.
+This app itself doesn't know or care where it's hosted — it can live in the same deployment as the static site (Vercel, via `api/index.py` at the project root) or run completely independently (a generic ASGI host, or cPanel).
 
 **Requires Python 3.9+** (the code uses built-in generic type hints like `dict[str, str]`, which need 3.9). If a cPanel/Hostinger "Setup Python App" slot only offers something older, that's worth checking before picking that deployment path.
 
@@ -32,9 +32,15 @@ Resend requires the `RESEND_FROM` address's domain to be verified with SPF/DKIM 
 
 ## Deploying
 
-Two paths, depending on where the backend ends up — pick whichever matches the actual hosting decision.
+Three paths — pick whichever matches the actual hosting decision. The project is currently set up for Path A (Vercel); see the root `README.md` for the exact click-by-click steps.
 
-### Path A — a generic ASGI host (Render, Railway, Fly.io)
+### Path A — Vercel (same deployment as the static site)
+
+`api/index.py` (project root) imports this app directly — Vercel's Python runtime auto-detects the `app` ASGI variable, and `vercel.json` routes all `/api/*` requests to it. Nothing in `backend/` needs to change for this path; the root `requirements.txt` (a trimmed copy of this directory's own, see its comment) is what Vercel actually installs from.
+
+**Known trade-off**: the rate limiter (`app/rate_limit.py`) uses in-memory state, which assumes a long-running process. Vercel serverless functions don't guarantee that — each invocation can hit a fresh, stateless instance, so the 5/hour-per-IP and 60/hour-global limits won't be perfectly enforced across cold starts. For a low-traffic consultation form this is an acceptable trade-off (the honeypot still catches most spam regardless), not a functional break — just don't expect the rate limit to be airtight on this path. If it ever needs to be airtight, that means swapping the in-memory store for something external like Upstash Redis.
+
+### Path B — a generic ASGI host (Render, Railway, Fly.io)
 
 The included `Procfile` is the start command:
 ```
@@ -42,7 +48,7 @@ web: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers
 ```
 `--proxy-headers` is required — it's what makes uvicorn trust the platform's `X-Forwarded-For` header, which the rate limiter depends on to identify real client IPs behind the platform's edge proxy. Set the same environment variables from `.env` in the host's dashboard/secrets manager. Fly.io typically wants a Dockerfile instead of a Procfile — if that ends up being the choice, its `CMD` is the same command, just as a Docker `CMD` array.
 
-### Path B — cPanel / Hostinger "Setup Python App"
+### Path C — cPanel / Hostinger "Setup Python App"
 
 `passenger_wsgi.py` is the entry point cPanel's tooling expects. A few things to know:
 - cPanel's Python App feature creates its own isolated app root and virtualenv **outside** `public_html` — upload this `backend/` folder there, not alongside the static HTML files.
@@ -61,7 +67,7 @@ web: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers
    ```
    Expect `{"ok": true}` and a real email arriving (at `RESEND_TO`, or your Resend account's own address if using the sandbox sender), attachment intact.
 2. Honeypot: repeat with `-F "website=bot-filled-this"` — still `{"ok": true}` HTTP 200, but confirm via the Resend dashboard that no email was actually sent for that request.
-3. Oversize file: attach a file over 10MB directly via `curl` (bypassing the client-side JS check entirely) and confirm the server rejects it with a 422 — this is the "never trust the client alone" check in practice.
+3. Oversize file: attach a file over 4MB directly via `curl` (bypassing the client-side JS check entirely) and confirm the server rejects it with a 422 — this is the "never trust the client alone" check in practice.
 4. Rate limit: fire 6 requests in quick succession from the same IP, confirm the 6th returns HTTP 429.
 5. From the actual browser, serve the static site (not `file://`) and submit the real form, including a file attachment, and confirm the success pop-up fires and the email arrives. Then try calling the endpoint from a different origin in the browser console and confirm CORS blocks it.
-6. Only after all of the above pass locally, repeat step 5 against the real deployed backend URL, with `consult.html`'s fetch URL and `ALLOWED_ORIGIN` both updated to the real production values.
+6. Only after all of the above pass locally, repeat step 5 against the real deployment. On Path A (Vercel), `consult.html`'s `CONSULT_API_URL` is already a same-origin relative path (`/api/consult`) and needs no change — just update `ALLOWED_ORIGIN` to the deployed domain. On Paths B/C, both `CONSULT_API_URL` and `ALLOWED_ORIGIN` need to point at the real, separately-hosted backend URL.
