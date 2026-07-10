@@ -446,7 +446,12 @@ nav {
   margin: calc(var(--icard-gap) - var(--icard-pad)) calc(var(--icard-gap) - var(--icard-pad)) max(18px, calc(2.2 * var(--u)));
   transition: background .3s;
 }
-.icap svg { width: max(32px, calc(3.4 * var(--u))); height: auto; flex-shrink: 0; color: var(--primary) }
+/* sized by HEIGHT, width:auto — the concentric-radius math (see :root's
+   --r-card comment) counts on the icon contributing exactly 3.4u to the
+   pill's height; the icons aren't square (viewBox 51.83×49.24), so sizing
+   by width left pills ~5% short and the corners visibly off-concentric on
+   large screens. */
+.icap svg { height: max(32px, calc(3.4 * var(--u))); width: auto; flex-shrink: 0; color: var(--primary) }
 .icap h3 { margin: 0; line-height: 1.15 }
 
 /* accent "+" lists — block centered in the card, text left-aligned so all
@@ -634,7 +639,7 @@ footer {
   .pg-h { margin-bottom: calc(6 * var(--u)) }
   .pg-note { max-width: none }
   .icap { gap: max(14px, calc(4 * var(--u))); padding: max(14px, calc(3.9 * var(--u))) max(24px, calc(5.6 * var(--u))) }
-  .icap svg { width: max(32px, calc(8.6 * var(--u))) }
+  .icap svg { height: max(32px, calc(8.6 * var(--u))); width: auto }
   .chips { gap: max(12px, calc(3.2 * var(--u))) }
   .pill-btn { padding: max(8px, calc(.98 * var(--u))) max(20px, calc(4.2 * var(--u))); min-height: 32px }
   @supports (height: 1svh) {
