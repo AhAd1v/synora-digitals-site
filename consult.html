@@ -7,7 +7,7 @@
 <meta name="description" content="Book a free consultation with Synora Digitals. Tell us what eats your time — we'll map it, quote it, build it, and keep it running. Typical reply within 24 hours.">
 <meta name="robots" content="index, follow">
 <!-- placeholder domain — replace every synoradigitals.com URL once real hosting/domain is finalized -->
-<link rel="canonical" href="https://synoradigitals.com/consult.html">
+<link rel="canonical" href="https://synoradigitals.com/consult">
 <meta name="theme-color" content="#d9d9d9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1e1e47" media="(prefers-color-scheme: dark)">
 
@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Synora Digitals">
 <meta property="og:title" content="Consult — Synora Digitals">
 <meta property="og:description" content="Book a free consultation with Synora Digitals. Tell us what eats your time — we'll map it, quote it, build it, and keep it running. Typical reply within 24 hours.">
-<meta property="og:url" content="https://synoradigitals.com/consult.html">
+<meta property="og:url" content="https://synoradigitals.com/consult">
 <meta property="og:image" content="https://synoradigitals.com/assets/img/mini-logo-dark.png">
 <meta property="og:image:width" content="144">
 <meta property="og:image:height" content="144">
@@ -76,6 +76,13 @@
 }
 .frow { display: grid; grid-template-columns: 1fr 1fr; gap: max(18px, calc(1.9 * var(--u))) }
 .cfield {
+  /* -webkit-appearance/appearance: none — without it, iOS Safari draws its
+     own native chrome on <input> elements, which can silently override our
+     background-color (getComputedStyle still reports our authored value,
+     making this invisible in devtools — the native paint just wins on
+     screen). .country-code below already resets this for the <select>;
+     plain text inputs need the same reset. */
+  -webkit-appearance: none; appearance: none;
   display: block; width: 100%; box-sizing: border-box;
   background: var(--header-bg);
   border: 1.5px solid transparent;
@@ -116,6 +123,7 @@
   outline: none; flex-shrink: 0;
 }
 .phone-input {
+  -webkit-appearance: none; appearance: none;
   flex: 1; min-width: 0;
   background: transparent; border: none; outline: none;
   border-radius: 0 var(--r-field) var(--r-field) 0; /* it has no bg of its own normally, so this
@@ -141,32 +149,41 @@
 /* ── FILLED-FIELD GLOW ──
    Once a field actually has real content — :not(:placeholder-shown) needs
    no JS since every field here already carries a placeholder — the pill
-   fills with the accent color and gets the same sweeping light as the
-   site's buttons (see shared.css's "UNIVERSAL BUTTON HOVER GLOW"), but
-   dialed way down: opacity cut ~90% and the loop slowed to double the
-   button's speed, since a filled-in field reads that way for as long as
-   the user stays on the page — it needs to be a calm, ambient indicator,
-   not a hover-style call to action.
-   .cfield/.cfield-area are <input>/<textarea> — replaced elements don't
-   render ::before/::after, so the sweep can't be a pseudo-element here
-   like it is on buttons; instead it's a second, animated background-image
-   layer on the field's own background (background-color still shows
-   through as the base layer underneath). .phone-field is a plain <div>
-   wrapper though, so it uses the normal ::before technique, matched to
-   its filled state via :has() on the inner .phone-input. */
-.cfield:not(:placeholder-shown), .cfield-area:not(:placeholder-shown) {
+   fills with the accent color and gets a slow breathing box-shadow glow
+   that dims and brightens, since a filled-in field reads that way for as
+   long as the user stays on the page — it needs to be a calm, ambient
+   indicator, not a hover-style call to action. (Previously this reused the
+   site's button sweep animation at a dialed-down opacity; replaced with a
+   glow since the sweep read as a "shine" pass rather than a resting-state
+   indicator.) .phone-field is a plain <div> wrapper matched to its filled
+   state via :has() on the inner .phone-input.
+   The .filled classes are a JS-driven backup for the same state (see the
+   script below) — Safari doesn't reliably re-evaluate :placeholder-shown
+   after autofill, so relying on the pseudo-class alone left autofilled
+   Name/Email fields stuck looking empty. Both selectors are additive/OR'd,
+   not a replacement — plain typing still works with zero JS via the
+   pseudo-class alone. */
+.cfield:not(:placeholder-shown), .cfield-area:not(:placeholder-shown),
+.cfield.filled, .cfield-area.filled {
   background-color: var(--phrase);
-  background-image: var(--sweep-gradient);
-  --sweep-opacity: .095;
-  background-size: 300% 100%; background-repeat: no-repeat; background-position-x: -150%;
   color: #eeeef0;
-  animation: btn-sheen 3.6s linear infinite;
+  animation: field-glow 3.6s ease-in-out infinite;
 }
-.phone-field:has(.phone-input:not(:placeholder-shown)) {
+.phone-field:has(.phone-input:not(:placeholder-shown)), .phone-field.filled {
   background: var(--phrase);
-  position: relative; isolation: isolate;
-  --sweep-w: 18px;
-  --sweep-opacity: .095;
+  animation: field-glow 3.6s ease-in-out infinite;
+}
+/* The inset 1000px layer in both stops is NOT decorative — it's the standard
+   paint-over-the-forced-autofill-background trick (same as the
+   :-webkit-autofill rule above). It has to live INSIDE these keyframes:
+   animating box-shadow means the animation's value replaces any box-shadow
+   from the normal cascade, so without it here, the glow animation was
+   wiping out the autofill rule's inset shadow and letting the browser's
+   forced autofill background show through as gray/white. On non-autofilled
+   filled fields it's invisible (purple painted over the same purple bg). */
+@keyframes field-glow {
+  0%, 100% { box-shadow: inset 0 0 0 1000px var(--phrase), 0 0 max(4px, calc(.4 * var(--u))) 0 color-mix(in srgb, var(--phrase) 45%, transparent); }
+  50%      { box-shadow: inset 0 0 0 1000px var(--phrase), 0 0 max(14px, calc(1.4 * var(--u))) max(1px, calc(.1 * var(--u))) color-mix(in srgb, var(--phrase) 80%, transparent); }
 }
 /* .country-code deliberately NOT included here: it's an opaque circle with
    its own background (var(--main-bg)) sitting on top of the pill, not
@@ -175,17 +192,9 @@
    themes. Forcing it to #eeeef0 here made it invisible specifically in
    light mode, since var(--main-bg) IS #eeeef0 in light mode — text and
    background became the same color. */
-.phone-field:has(.phone-input:not(:placeholder-shown)) .phone-input {
+.phone-field:has(.phone-input:not(:placeholder-shown)) .phone-input,
+.phone-field.filled .phone-input {
   color: #eeeef0;
-}
-.phone-field:has(.phone-input:not(:placeholder-shown))::before {
-  content: ""; position: absolute; inset: 0; z-index: 1;
-  border-radius: inherit;
-  background: var(--sweep-gradient);
-  background-size: 300% 100%; background-repeat: no-repeat; background-position-x: -150%;
-  mix-blend-mode: overlay;
-  pointer-events: none;
-  animation: btn-sheen 3.6s linear infinite;
 }
 
 /* Honeypot field — off-screen (not display:none/visibility:hidden, which
@@ -197,14 +206,42 @@
 .filedrop {
   position: relative;
   background: var(--header-bg);
-  border: 1.5px dashed var(--phrase);
+  /* NO border — the visible dashed line is the animated SVG overlay below
+     (.filedrop-ants). An earlier 1.5px transparent border quietly broke the
+     overlay's alignment: an absolutely-positioned child sits in the PADDING
+     box (inside the border) while the JS measures offsetWidth (the BORDER
+     box), so the SVG element was 3px smaller than its own drawn coordinates
+     and shifted off the container's visual edge — and the resulting
+     viewBox/element aspect mismatch made preserveAspectRatio letterbox the
+     drawing further inward on the wider axis. The border's 1.5px is folded
+     into the padding instead so text layout is unchanged. */
   border-radius: var(--r-dropzone);
-  padding: max(28px, calc(2.6 * var(--u))) max(20px, calc(2 * var(--u)));
+  padding: calc(max(28px, 2.6 * var(--u)) + 1.5px) calc(max(20px, 2 * var(--u)) + 1.5px);
   display: flex; flex-direction: column; align-items: center; text-align: center;
   gap: max(10px, calc(1 * var(--u)));
   transition: background .2s;
 }
 .filedrop.dragover { background: color-mix(in srgb, var(--phrase) 14%, var(--header-bg)); }
+/* marching-ants outline — same stroke-dashoffset technique as shared.css's
+   zig-zag separator, traced around a rect whose viewBox/x/y/width/height/rx
+   are set in JS to the dropzone's real measured pixel box (see
+   syncFiledropAnts() below) rather than via CSS percentages/calc() on the
+   SVG geometry, which didn't reliably resolve to the container's actual
+   edge across browsers. */
+.filedrop-ants {
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.filedrop-ants rect {
+  fill: none;
+  stroke: var(--phrase);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 6 5;
+  animation: filedrop-ants-move 1s linear infinite;
+}
+@keyframes filedrop-ants-move { to { stroke-dashoffset: -11; } }
 .filedrop-ico { width: max(28px, calc(2.6 * var(--u))); height: auto; color: var(--muted); }
 .filedrop-text { color: var(--muted); font-size: var(--fs-form-label); margin: 0; }
 .filepick-btn, .submit-btn {
@@ -400,7 +437,9 @@
   .confirmmask.open, .confirmmask.closing,
   .confirmmask.open .confirmcard, .confirmmask.closing .confirmcard { animation-duration: 1ms !important; animation-delay: 0ms !important; }
   .cfield:not(:placeholder-shown), .cfield-area:not(:placeholder-shown),
-  .phone-field:has(.phone-input:not(:placeholder-shown))::before { animation: none !important; }
+  .cfield.filled, .cfield-area.filled,
+  .phone-field:has(.phone-input:not(:placeholder-shown)), .phone-field.filled,
+  .filedrop-ants rect { animation: none !important; }
   /* the toast is an error message, not decoration — cutting it to 1ms would
      make it unreadable. Keep the same on-screen hold time, just drop the
      bounce/scale for a plain fade. */
@@ -424,21 +463,21 @@
 <!-- ═══ NAV — Consult page: Consult pill → Home ═══ -->
 <nav>
   <div class="nav-left">
-    <a href="services.html"   class="nav-pill">Services</a>
-    <a href="index.html"      class="nav-pill nav-pill-home">Home</a>
+    <a href="/services"   class="nav-pill">Services</a>
+    <a href="/"      class="nav-pill nav-pill-home">Home</a>
   </div>
 
   <button class="ham-btn" onclick="openMenu()" aria-label="Menu">
     <img class="ham-icon" src="assets/img/menu-icon-light.svg" alt="">
   </button>
 
-  <a href="index.html" class="logo">
+  <a href="/" class="logo">
     <img class="logo-img" src="assets/img/logo-light.svg" alt="Synora Digitals">
   </a>
 
   <div class="nav-right">
-    <a href="policies.html" class="nav-pill">Policies</a>
-    <a href="about.html"    class="nav-pill">About</a>
+    <a href="/policies" class="nav-pill">Policies</a>
+    <a href="/about"    class="nav-pill">About</a>
     <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-label="Toggle dark mode"><img class="theme-icon" src="assets/img/moon-icon.svg" alt=""></button>
   </div>
 </nav>
@@ -448,10 +487,10 @@
   <div class="mmcard">
     <button class="mmclose" onclick="closeMenu()" aria-label="Close menu"><img class="cross-icon" src="assets/img/menu-cross-light.svg" alt=""></button>
     <nav class="mmlinks">
-      <a href="services.html"   onclick="closeMenu()">Services</a>
-      <a href="index.html"      onclick="closeMenu()" class="mmlink-home">Home</a>
-      <a href="policies.html"   onclick="closeMenu()">Policies</a>
-      <a href="about.html"      onclick="closeMenu()">About</a>
+      <a href="/services"   onclick="closeMenu()">Services</a>
+      <a href="/"      onclick="closeMenu()" class="mmlink-home">Home</a>
+      <a href="/policies"   onclick="closeMenu()">Policies</a>
+      <a href="/about"      onclick="closeMenu()">About</a>
     </nav>
   </div>
 </div>
@@ -539,6 +578,11 @@
         <textarea required name="msg" rows="4" class="cfield cfield-area" placeholder="Describe the tasks that eat your time, tools you use, roughly monthly volume, anything that helps." aria-label="What would you like to automate?"></textarea>
 
         <div class="filedrop" id="fileDrop">
+          <!-- preserveAspectRatio="none": the viewBox must map 1:1 onto the
+               element's box with no letterboxing/centering, so any transient
+               sub-pixel size mismatch stretches imperceptibly instead of
+               offsetting the whole outline off the container's edge. -->
+          <svg class="filedrop-ants" id="filedropAnts" preserveAspectRatio="none" aria-hidden="true"><rect/></svg>
           <svg class="filedrop-ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 15V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v3a2 2 0 002 2h10a2 2 0 002-2v-3"/></svg>
           <p class="filedrop-text">Drag &amp; drop your requirement / reference document (up to 4MB)</p>
           <label class="filepick-btn" for="attachmentInput">Choose a File</label>
@@ -605,14 +649,14 @@
 
 <!-- FOOTER -->
 <footer>
-  <a href="index.html" class="foot-logo">
+  <a href="/" class="foot-logo">
     <img class="logo-img" src="assets/img/logo-light.svg" alt="Synora Digitals">
   </a>
   <div class="foot-links">
-    <a href="index.html">Home</a>
-    <a href="services.html">Services</a>
-    <a href="policies.html" class="foot-legal-link foot-privacy">Policies</a>
-    <a href="about.html" class="foot-legal-link foot-terms">About</a>
+    <a href="/">Home</a>
+    <a href="/services">Services</a>
+    <a href="/policies" class="foot-legal-link foot-privacy">Policies</a>
+    <a href="/about" class="foot-legal-link foot-terms">About</a>
   </div>
   <div class="foot-copy">© 2025 Synora Digitals. All rights reserved &mdash; the paperwork we didn&rsquo;t automate.</div>
 </footer>
@@ -635,6 +679,62 @@ function closeSuccess() {
   setTimeout(function () { m.classList.remove('open', 'closing'); }, 195);
 }
 function successMaskClick(e) { if (e.target === e.currentTarget) closeSuccess(); }
+
+// ── FILLED-FIELD STATE (autofill-safe) ──
+// The purple "filled" look is driven by CSS (:not(:placeholder-shown), see
+// shared style block) which normally needs no JS at all — but Safari has a
+// long-standing bug where autofilling a field (Contacts-based Name/Email
+// autofill, saved-password autofill, etc.) sets the value without
+// re-evaluating :placeholder-shown, so the field silently stays styled as
+// empty until the user clicks into it. :-webkit-autofill has the same gap.
+// A `.filled` class toggled off real 'input'/'change'/'blur' events was the
+// first attempt at a fix — that covers manual typing, but iOS Safari's
+// *batch* Contacts autofill (tapping one suggestion fills Name+Email+Phone
+// together) turned out not to dispatch input/change on the sibling fields
+// it fills at all, and doesn't set :-webkit-autofill either — both
+// detection paths were silent for that specific flow, with nothing to
+// listen for. The only thing guaranteed to be true is the field's actual
+// .value, so this polls it directly on an interval instead of waiting for
+// any particular event or pseudo-class to fire.
+(function () {
+  var textFields = document.querySelectorAll('.cform .cfield, .cform .cfield-area');
+  var phoneInputEl = document.querySelector('.cform .phone-input');
+
+  function syncFilled(el) {
+    if (el.value && el.value.length) el.classList.add('filled');
+    else el.classList.remove('filled');
+  }
+  function syncPhoneFilled() {
+    if (!phoneInputEl) return;
+    var wrap = phoneInputEl.closest('.phone-field');
+    if (!wrap) return;
+    if (phoneInputEl.value && phoneInputEl.value.length) wrap.classList.add('filled');
+    else wrap.classList.remove('filled');
+  }
+
+  textFields.forEach(function (el) {
+    ['input', 'change', 'blur'].forEach(function (evt) {
+      el.addEventListener(evt, function () { syncFilled(el); });
+    });
+    syncFilled(el);
+  });
+  if (phoneInputEl) {
+    ['input', 'change', 'blur'].forEach(function (evt) {
+      phoneInputEl.addEventListener(evt, syncPhoneFilled);
+    });
+    syncPhoneFilled();
+  }
+
+  // Poll every 400ms for as long as the consult form is on screen. Cheap
+  // (five .value reads + classList checks) and catches every fill path —
+  // typing, paste, batch autofill with no events, single-field autofill,
+  // whatever iOS/Chrome/etc. do next — since it never depends on any of
+  // them notifying us; it just keeps checking the ground truth.
+  setInterval(function () {
+    textFields.forEach(syncFilled);
+    syncPhoneFilled();
+  }, 400);
+})();
 
 // ── NO-FILE CONFIRM DIALOG ──
 var confirmMask = document.getElementById('confirmMask');
@@ -674,6 +774,68 @@ var fileToast = document.getElementById('fileToast');
 var fileDrop = document.getElementById('fileDrop');
 var lastAttachedMeta = null; // {name, size, lastModified} of the currently-attached file
 var _fileToastTimer;
+
+// ── DROPZONE MARCHING-ANTS OUTLINE ──
+// The rect can't just use width:100%/height:100% in CSS — percentage/calc()
+// geometry properties on SVG shapes aren't reliably resolved against the
+// parent box across browsers, which is what made the outline render at the
+// wrong size/position instead of tracing the dropzone's actual edge. Instead
+// this measures .filedrop's real rendered box in JS (same approach as
+// shared.js's sizeButtonSweeps) and sets the SVG's viewBox + the rect's
+// x/y/width/height/rx as plain numeric attributes, so there's no dependency
+// on any browser's geometry-property support — just ordinary SVG coordinates.
+var filedropAntsSvg = document.getElementById('filedropAnts');
+var filedropAntsRect = filedropAntsSvg && filedropAntsSvg.querySelector('rect');
+function syncFiledropAnts() {
+  if (!filedropAntsRect) return;
+  // getBoundingClientRect, not offsetWidth/Height — offset* rounds to
+  // integers, and with preserveAspectRatio="none" the viewBox must match
+  // the element's real (fractional) rendered size to map coordinates 1:1.
+  var b = fileDrop.getBoundingClientRect();
+  var w = b.width, h = b.height;
+  if (!w || !h) return;
+  var r = parseFloat(getComputedStyle(fileDrop).borderTopLeftRadius) || 0;
+  // Explicit width/height attributes (not just CSS) are a second, independent
+  // guarantee the SVG's own rendered box matches the container — doesn't
+  // depend on the CSS top/right/bottom/left stretch trick succeeding.
+  filedropAntsSvg.setAttribute('width', w);
+  filedropAntsSvg.setAttribute('height', h);
+  filedropAntsSvg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+  filedropAntsRect.setAttribute('x', 0.75);
+  filedropAntsRect.setAttribute('y', 0.75);
+  filedropAntsRect.setAttribute('width', Math.max(0, w - 1.5));
+  filedropAntsRect.setAttribute('height', Math.max(0, h - 1.5));
+  filedropAntsRect.setAttribute('rx', Math.max(0, r - 0.75));
+}
+syncFiledropAnts();
+document.addEventListener('DOMContentLoaded', syncFiledropAnts);
+window.addEventListener('load', syncFiledropAnts);
+if (document.fonts && document.fonts.ready) { document.fonts.ready.then(syncFiledropAnts); }
+// ResizeObserver watches .filedrop's own box directly, not window size — it
+// catches container resizes (font swap reflow, orientation change) that
+// don't necessarily fire a `window` resize event.
+if (typeof ResizeObserver !== 'undefined') {
+  new ResizeObserver(function () { syncFiledropAnts(); }).observe(fileDrop);
+}
+window.addEventListener('resize', function () {
+  clearTimeout(window._filedropAntsResizeTimer);
+  window._filedropAntsResizeTimer = setTimeout(syncFiledropAnts, 150);
+});
+// iOS Safari's collapsing/expanding address bar changes the visual viewport
+// without always firing `resize` or a genuine box-size change ResizeObserver
+// would catch — visualViewport is the API made specifically for that.
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', syncFiledropAnts);
+  window.visualViewport.addEventListener('scroll', function () {
+    clearTimeout(window._filedropAntsVvTimer);
+    window._filedropAntsVvTimer = setTimeout(syncFiledropAnts, 100);
+  });
+}
+// Belt-and-suspenders: keep re-measuring on a steady 400ms poll (same
+// cadence as the filled-field poll above) instead of a finite settle pass —
+// syncFiledropAnts is a handful of reads/writes, and this catches any
+// layout change none of the events above map to, whenever it happens.
+setInterval(syncFiledropAnts, 400);
 
 function showFileToast(msg) {
   clearTimeout(_fileToastTimer);

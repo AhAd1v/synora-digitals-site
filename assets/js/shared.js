@@ -46,19 +46,24 @@ document.addEventListener('click', function (e) {
 // proportionally wider light band than a small dialog button. Geometric
 // mean of width/height so both dimensions matter, not just one; clamped so
 // neither a tiny icon-sized button nor a huge CTA gets a silly value.
-function sizeButtonSweeps() {
-  var targets = document.querySelectorAll(
-    '.nav-pill, .pill-btn, .cta-btn, .submit-btn, .filepick-btn, .confirm-cancel, .confirm-proceed, .svc-plus, ' +
-    '.cfield, .cfield-area, .phone-field, .chip'
-  );
+// Chips use the same factor as every other button/pill — they share the
+// full universal sheen spec (opacity/speed/blur) now, so their band has to
+// be sized for the same blur radius too, not the old narrower blur-less
+// sizing they had when their shine was a separate quieter variant.
+function sizeSweep(targets, factor, min, max) {
   for (var i = 0; i < targets.length; i++) {
     var el = targets[i];
     var w = el.offsetWidth, h = el.offsetHeight;
     if (!w || !h) continue;
-    var sweep = Math.sqrt(w * h) * 0.8; // 100% wider than the original 0.4 factor
-    sweep = Math.max(32, Math.min(180, sweep));
+    var sweep = Math.sqrt(w * h) * factor;
+    sweep = Math.max(min, Math.min(max, sweep));
     el.style.setProperty('--sweep-w', sweep + 'px');
   }
+}
+function sizeButtonSweeps() {
+  sizeSweep(document.querySelectorAll(
+    '.nav-pill, .pill-btn, .cta-btn, .submit-btn, .filepick-btn, .confirm-cancel, .confirm-proceed, .svc-plus, .chip'
+  ), 1.6, 64, 360);
 }
 // Run at every reliable checkpoint rather than betting on one — readyState
 // timing right at this <script> tag's own execution point is inconsistent,

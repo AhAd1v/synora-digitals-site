@@ -194,7 +194,7 @@
   transform: translate(-50%, -50%);
   opacity: 1; transition: opacity .2s, background .3s;
   border-radius: 50%; isolation: isolate;
-  --sweep-w: 6px;
+  --sweep-w: 12px; /* doubled, paired with the doubled blur below */
 }
 .svc-plus svg { width: 100%; height: auto; display: block; position: relative; z-index: 2; }
 .svc-card.open .svc-plus { opacity: 0 }
@@ -210,13 +210,13 @@
   border-radius: inherit;
   /* --sweep-gradient/--sweep-w/--sweep-opacity are shared tokens defined
      once in shared.css's :root — same gradient every hover/filled glow on
-     the site reuses, default .95 opacity here matches this one's original
-     value so no override is needed. Same fix as shared.css's button sweep:
-     single non-tiled band that starts/ends off-screen, so the loop restart
-     is invisible. */
+     the site reuses, at the shared default opacity (no local override
+     needed, so a global brightness change there applies here too). Same
+     fix as shared.css's button sweep: single non-tiled band that
+     starts/ends off-screen, so the loop restart is invisible. */
   background: var(--sweep-gradient);
   background-size: 300% 100%; background-repeat: no-repeat; background-position-x: 150%;
-  filter: blur(3px); mix-blend-mode: overlay;
+  filter: blur(6px); mix-blend-mode: overlay; /* doubled from 3px, see shared.css's matching fix */
   opacity: 0; pointer-events: none;
 }
 .svc-card:hover .svc-plus, .svc-card:focus-visible .svc-plus,
@@ -349,21 +349,21 @@
 <!-- ═══ NAV ═══ -->
 <nav>
   <div class="nav-left">
-    <a href="services.html"   class="nav-pill">Services</a>
-    <a href="consult.html"    class="nav-pill">Consult</a>
+    <a href="/services"   class="nav-pill">Services</a>
+    <a href="/consult"    class="nav-pill">Consult</a>
   </div>
 
   <button class="ham-btn" onclick="openMenu()" aria-label="Menu">
     <img class="ham-icon" src="assets/img/menu-icon-light.svg" alt="">
   </button>
 
-  <a href="index.html" class="logo">
+  <a href="/" class="logo">
     <img class="logo-img" src="assets/img/logo-light.svg" alt="Synora Digitals">
   </a>
 
   <div class="nav-right">
-    <a href="policies.html" class="nav-pill">Policies</a>
-    <a href="about.html"     class="nav-pill">About</a>
+    <a href="/policies" class="nav-pill">Policies</a>
+    <a href="/about"     class="nav-pill">About</a>
     <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-label="Toggle dark mode"><img class="theme-icon" src="assets/img/moon-icon.svg" alt=""></button>
   </div>
 </nav>
@@ -373,10 +373,10 @@
   <div class="mmcard">
     <button class="mmclose" onclick="closeMenu()" aria-label="Close menu"><img class="cross-icon" src="assets/img/menu-cross-light.svg" alt=""></button>
     <nav class="mmlinks">
-      <a href="services.html"   onclick="closeMenu()">Services</a>
-      <a href="consult.html"    onclick="closeMenu()">Consult</a>
-      <a href="policies.html"   onclick="closeMenu()">Policies</a>
-      <a href="about.html"      onclick="closeMenu()">About</a>
+      <a href="/services"   onclick="closeMenu()">Services</a>
+      <a href="/consult"    onclick="closeMenu()">Consult</a>
+      <a href="/policies"   onclick="closeMenu()">Policies</a>
+      <a href="/about"      onclick="closeMenu()">About</a>
     </nav>
   </div>
 </div>
@@ -428,7 +428,7 @@
   <section class="svc-sec" id="services">
     <div class="sec-head">
       <h2 class="sec-title">Our Services</h2>
-      <a class="sec-arrow" href="services.html" aria-label="All services"><svg viewBox="0 0 22 22" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      <a class="sec-arrow" href="/services" aria-label="All services"><svg viewBox="0 0 22 22" aria-hidden="true"><use href="#i-arrow"/></svg></a>
     </div>
     <div class="svc-row" id="svcRow">
       <article class="svc-card open" role="button" tabindex="0" aria-expanded="true">
@@ -488,7 +488,7 @@
   <section class="cta-sec" id="contact">
     <span class="cta-ico"><svg viewBox="0 0 48.84 40.58" aria-hidden="true"><use href="#i-getintouch"/><g clip-path="url(#gitClip)"><rect class="git-beam" x="-8" y="26" width="8" height="13" fill="url(#gitBeamGrad)"/></g></svg></span>
     <h2 class="cta-head">Ready to automate your business <br>What&rsquo;s stopping you? Let&rsquo;s talk.</h2>
-    <a class="cta-btn" href="consult.html">Get in touch</a>
+    <a class="cta-btn" href="/consult">Get in touch</a>
     <p class="pg-note">A human replies. Ironic for an automation company, we know.</p>
   </section>
 
@@ -496,14 +496,14 @@
 
 <!-- FOOTER — outside page-card, on header-bg background -->
 <footer>
-  <a href="index.html" class="foot-logo">
+  <a href="/" class="foot-logo">
     <img class="logo-img" src="assets/img/logo-light.svg" alt="Synora Digitals">
   </a>
   <div class="foot-links">
-    <a href="services.html">Services</a>
-    <a href="consult.html">Consult</a>
-    <a href="policies.html" class="foot-legal-link foot-privacy">Policies</a>
-    <a href="about.html" class="foot-legal-link foot-terms">About</a>
+    <a href="/services">Services</a>
+    <a href="/consult">Consult</a>
+    <a href="/policies" class="foot-legal-link foot-privacy">Policies</a>
+    <a href="/about" class="foot-legal-link foot-terms">About</a>
   </div>
   <div class="foot-copy">© 2025 Synora Digitals. All rights reserved &mdash; the paperwork we didn&rsquo;t automate.</div>
 </footer>

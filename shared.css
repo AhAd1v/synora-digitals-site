@@ -49,9 +49,23 @@
   --edge:     max(28px, calc(3.4 * var(--u)));
 
   --r-pill: 999px;
-  /* concentric with the inner capsule pills: card radius = pill radius
-     (capsule height/2 ≈ 3.4u) + card padding (2.4u) → equal offset all round */
-  --r-card: max(28px, calc(5.8 * var(--u)));
+  /* .icard geometry — standardized on the homepage services-card design
+     (icons/Full design additions/home/"services container (light mode).svg"):
+     the inner capsule pill sits a tight, equal gap from the container's
+     top/left/right edges, gap = 0.205 × pill radius (7.65:37.27 in the SVG,
+     0.97su:4.715su in the homepage .svc-card — same ratio), and the outer
+     corner radius = pill radius + gap so the corners run concentric.
+     Pill height here = 2 × 3.4u (icon 3.4u + 2×1.7u capsule padding, and
+     the icon-less h3 pill's padding is solved to the same height below):
+       --icard-gap = 0.205 × 3.4u ≈ .7u
+       --r-card    = 3.4u + .7u   = 4.1u
+     Body text keeps its own larger inset (--icard-pad) — in the design the
+     description area is inset well past the capsule too. Both radius and
+     gap are fixed (not height-proportional), so a card extending downward
+     for long text keeps the same roundness and the same pill↔edge gap. */
+  --icard-pad: max(20px, calc(2.4 * var(--u)));
+  --icard-gap: max(7px, calc(.7 * var(--u)));
+  --r-card: max(37px, calc(4.1 * var(--u)));
   --r-page: max(36px, calc(6.59 * var(--u)));
 
   /* ── TYPE SCALE ──
@@ -77,10 +91,10 @@
      by --sweep-w (per-element width, set dynamically by shared.js) and
      --sweep-opacity, replaces what used to be the same 5-line gradient
      hand-copied at every usage site with only the opacity number changed
-     between them (.95 for a prominent button hover, .095 for a quiet
-     ambient "this is filled in" indicator — set --sweep-opacity:.095 on
-     whichever selector wants the quiet version). */
-  --sweep-opacity: .95;
+     between them. Every button/pill/chip now shares this one default —
+     override --sweep-opacity on a selector only if a deliberately quieter
+     variant is ever wanted again. */
+  --sweep-opacity: .475;
   --sweep-gradient: linear-gradient(100deg,
     transparent 0%, transparent calc(50% - var(--sweep-w, 18px)),
     rgba(255,255,255, var(--sweep-opacity)) 50%,
@@ -382,7 +396,7 @@ nav {
 .icard {
   background: var(--header-bg);
   border-radius: var(--r-card);
-  padding: max(20px, calc(2.4 * var(--u)));
+  padding: var(--icard-pad);
   text-align: center; /* home cards center their copy */
   transition: background .3s;
 }
@@ -393,20 +407,25 @@ nav {
 }
 /* icon-less cards: title becomes a main-bg pill — echoes the home capsules
    (full-width flex, same as .icap below — not shrink-wrapped to the text).
+   The negative top/side margins pull the pill out of the card's text
+   padding (--icard-pad) so it sits exactly --icard-gap from the container's
+   top/left/right edges — the tight equal offset the services-container
+   design specifies (see --r-card's comment in :root).
    Vertical padding is solved so the pill's own radius (height/2, from the
-   999px border-radius) plus the card's padding exactly equals --r-card —
-   the same concentric relationship --r-card's own comment describes above.
-   Solving for padding: total pill height = 2 * (r-card - card padding);
-   text already contributes 1.15em (line-height) of that, so each side gets
-   (r-card - card padding - 0.575em). Written as one calc so it self-adjusts
-   for both --r-card and --u across web/mobile format without a duplicate
-   mobile override. */
+   999px border-radius) plus the gap exactly equals --r-card — concentric
+   corners. Solving: total pill height = 2 * (r-card - gap); text already
+   contributes 1.15em (line-height) of that, so each side gets
+   (r-card - gap - 0.575em). Written as one calc so it self-adjusts for
+   both --r-card and --u across web/mobile format without a duplicate
+   mobile override. A long title that wraps just makes the pill (and card)
+   taller — gap and card radius stay fixed, per the design's extension
+   rule. */
 .icard > h3:first-child {
   display: flex; align-items: center; justify-content: center;
   background: var(--main-bg);
   border-radius: 999px;
-  padding: max(14px, calc(var(--r-card) - max(20px, calc(2.4 * var(--u))) - 0.575em)) max(24px, calc(3 * var(--u)));
-  margin-bottom: max(18px, calc(2.2 * var(--u)));
+  padding: max(14px, calc(var(--r-card) - var(--icard-gap) - 0.575em)) max(24px, calc(3 * var(--u)));
+  margin: calc(var(--icard-gap) - var(--icard-pad)) calc(var(--icard-gap) - var(--icard-pad)) max(18px, calc(2.2 * var(--u)));
   transition: background .3s;
 }
 .icard p {
@@ -414,14 +433,17 @@ nav {
   line-height: 1.7; color: var(--muted);
 }
 /* capsule header (icon + name) inside a card — mirrors the homepage capsules:
-   generous icon inset and icon↔name gap, icon ≈ 50% of pill height like home */
+   generous icon inset and icon↔name gap, icon ≈ 50% of pill height like home.
+   Same negative-margin pull-out as .icard > h3:first-child above: the pill
+   sits --icard-gap from the container's top/left/right edges while the text
+   below keeps the full --icard-pad inset. */
 .icap {
   display: flex; align-items: center;
   gap: max(16px, calc(2.4 * var(--u)));
   background: var(--main-bg);
   border-radius: 999px;
   padding: max(14px, calc(1.7 * var(--u))) max(24px, calc(3 * var(--u)));
-  margin-bottom: max(18px, calc(2.2 * var(--u)));
+  margin: calc(var(--icard-gap) - var(--icard-pad)) calc(var(--icard-gap) - var(--icard-pad)) max(18px, calc(2.2 * var(--u)));
   transition: background .3s;
 }
 .icap svg { width: max(32px, calc(3.4 * var(--u))); height: auto; flex-shrink: 0; color: var(--primary) }
@@ -453,23 +475,16 @@ nav {
   padding: max(9px, calc(.85 * var(--u))) max(20px, calc(2 * var(--u)));
   font-size: var(--fs-note);
   transition: background .3s, color .3s;
-  position: relative; isolation: isolate; cursor: pointer;
-  --sweep-w: 14px;
+  cursor: pointer;
 }
-/* Tapping a chip toggles a highlighted state (click handler in shared.js) —
-   accent fill + the same quiet sheen as the consult form's filled fields
-   (see consult.html's "FILLED-FIELD GLOW"), not the loud button version;
-   these are decorative tags, not calls to action, so the shine stays subtle. */
-.chip.active { background: var(--phrase); color: #eeeef0; --sweep-opacity: .095; }
-.chip.active::before {
-  content: ""; position: absolute; inset: 0; z-index: 1;
-  border-radius: inherit;
-  background: var(--sweep-gradient);
-  background-size: 300% 100%; background-repeat: no-repeat; background-position-x: -150%;
-  mix-blend-mode: overlay;
-  pointer-events: none;
-  animation: btn-sheen 3.6s linear infinite;
-}
+/* Tapping a chip toggles a highlighted state (click handler in shared.js).
+   Chips are full members of the UNIVERSAL BUTTON HOVER GLOW system below —
+   same sheen opacity, speed and blur as the submit button and every other
+   pill (an earlier version gave them their own quieter/slower/blur-less
+   spec, which read as inconsistent next to the buttons). .active just
+   keeps the purple fill + running sheen on after the tap. */
+.chip.active { background: var(--phrase); color: #eeeef0; }
+.chip.active::before { opacity: 1; animation: btn-sheen 1.8s linear infinite; }
 
 /* numbered steps — centered stacks, like the homepage's centered language */
 .steps { max-width: calc(58 * var(--u)); margin: 0 auto; display: flex; flex-direction: column; gap: max(26px, calc(3.2 * var(--u))) }
@@ -580,7 +595,11 @@ footer {
     --icon-s: max(28px, min(calc(var(--nav-h) * .30), calc(8.5 * var(--u))));
     --edge:   max(34px, calc(8.718 * var(--u)));
     --r-page: max(36px, calc(12.82 * var(--u)));
-    --r-card: max(32px, calc(13.3 * var(--u)));
+    /* same services-container geometry as web format (see :root) — mobile
+       .icap pill height is 16.4u (icon 8.6u + 2×3.9u padding, overrides
+       below), so gap = 0.205 × 8.2u = 1.68u, radius = 8.2u + 1.68u */
+    --icard-gap: max(7px, calc(1.68 * var(--u)));
+    --r-card: max(37px, calc(9.88 * var(--u)));
 
     /* type scale — mobile multipliers; every consumer above just references
        var(--fs-*), so redefining the token here is the only override needed */
@@ -706,9 +725,11 @@ footer {
    transform:translateX) animates it, tiling seamlessly with no reset jump
    — that's the "wrap around" instead of a single pass-and-snap-back. */
 .nav-pill, .pill-btn, .cta-btn, .submit-btn, .filepick-btn,
-.confirm-cancel, .confirm-proceed {
+.confirm-cancel, .confirm-proceed, .chip {
   position: relative; isolation: isolate;
-  --sweep-w: 18px;
+  --sweep-w: 36px; /* doubled — the pre-blur band was too narrow relative to
+    the blur radius below, which is what made the glow read as a hard-edged
+    square on phones instead of a soft light; wider band + more blur fixes it */
 }
 .nav-pill:hover, .nav-pill:focus-visible,
 .pill-btn:hover, .pill-btn:focus-visible,
@@ -716,12 +737,14 @@ footer {
 .submit-btn:hover, .submit-btn:focus-visible,
 .filepick-btn:hover, .filepick-btn:focus-visible,
 .confirm-cancel:hover, .confirm-cancel:focus-visible,
-.confirm-proceed:hover, .confirm-proceed:focus-visible {
+.confirm-proceed:hover, .confirm-proceed:focus-visible,
+.chip:hover, .chip:focus-visible {
   background: var(--phrase) !important;
   color: #eeeef0 !important;
 }
 .nav-pill::before, .pill-btn::before, .cta-btn::before, .submit-btn::before,
-.filepick-btn::before, .confirm-cancel::before, .confirm-proceed::before {
+.filepick-btn::before, .confirm-cancel::before, .confirm-proceed::before,
+.chip::before {
   content: ""; position: absolute; inset: 0; z-index: 1;
   border-radius: inherit;
   /* single band, no tiling — background-repeat:repeat + a 0%->100% position
@@ -734,7 +757,7 @@ footer {
   background-size: 300% 100%;
   background-repeat: no-repeat;
   background-position-x: 150%;
-  filter: blur(5px);
+  filter: blur(10px); /* doubled from 5px, paired with the wider --sweep-w above */
   mix-blend-mode: overlay;
   opacity: 0;
   pointer-events: none;
@@ -745,7 +768,8 @@ footer {
 .submit-btn:hover::before, .submit-btn:focus-visible::before,
 .filepick-btn:hover::before, .filepick-btn:focus-visible::before,
 .confirm-cancel:hover::before, .confirm-cancel:focus-visible::before,
-.confirm-proceed:hover::before, .confirm-proceed:focus-visible::before {
+.confirm-proceed:hover::before, .confirm-proceed:focus-visible::before,
+.chip:hover::before, .chip:focus-visible::before {
   opacity: 1;
   animation: btn-sheen 1.8s linear infinite; /* halved back down from .9s — too fast on web */
 }
@@ -773,7 +797,7 @@ footer {
   /* keep the hover color change, drop the moving sheen */
   .nav-pill::before, .pill-btn::before, .cta-btn::before, .submit-btn::before,
   .filepick-btn::before, .confirm-cancel::before, .confirm-proceed::before,
-  .chip.active::before { animation: none !important }
+  .chip::before, .chip.active::before { animation: none !important }
 }
 
 /* Bigger tap areas on touch devices — invisible, no visual size change */
