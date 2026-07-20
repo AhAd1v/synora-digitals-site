@@ -2,9 +2,10 @@ User-agent: *
 Allow: /
 
 User-agent: Googlebot-Image
-Disallow: /assets/img/menu-icon-light.svg
-Disallow: /assets/img/menu-icon-dark.svg
-Disallow: /assets/img/menu-cross-light.svg
-Disallow: /assets/img/menu-cross-dark.svg
+Disallow: /assets/img/
+Allow: /assets/img/icon-192.png
+Allow: /assets/img/icon-512.png
+Allow: /assets/img/apple-touch-icon.png
+Allow: /assets/img/mini-logo-dark.svg
 
 Sitemap: https://synoradigitals.com/sitemap.xml
