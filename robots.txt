@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
 
+User-agent: Googlebot-Image
+Disallow: /assets/img/menu-icon-light.svg
+Disallow: /assets/img/menu-icon-dark.svg
+Disallow: /assets/img/menu-cross-light.svg
+Disallow: /assets/img/menu-cross-dark.svg
+
 Sitemap: https://synoradigitals.com/sitemap.xml
