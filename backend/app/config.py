@@ -20,10 +20,6 @@ class Settings(BaseSettings):
     DATABASE_URL: str = ""
     CORE_ADMIN_JWT_SECRET: str = ""
     CORE_ADMIN_OTP_TTL_MINUTES: int = 10
-    # One-time DB bootstrap (create tables + seed first admin) — see the /setup
-    # route's docstring. Empty by default so the route 401s unless explicitly
-    # configured; meant to be unset again once used.
-    CORE_ADMIN_SETUP_TOKEN: str = ""
 
     class Config:
         env_file = ".env"

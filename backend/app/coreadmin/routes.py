@@ -6,10 +6,9 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..config import settings
 from ..email_service import UpstreamError, send_coreadmin_otp_email
 from ..rate_limit import client_ip_key, limiter
-from .db import Base, get_session, _engine
+from .db import get_session
 from .models import CoreAdmin, CoreAdminAuditLog, CoreAdminOtp
 from .security import (
     HOURLY_REQUEST_CAP,
@@ -21,7 +20,6 @@ from .security import (
     CoreAdminSecretNotConfigured,
     generate_otp_code,
     hash_otp_code,
-    hash_password,
     issue_session_token,
     verify_otp_code,
     verify_password,
@@ -29,41 +27,6 @@ from .security import (
 )
 
 router = APIRouter(prefix="/api/coreadmin", tags=["coreadmin"])
-
-
-@router.post("/setup")
-async def setup(request: Request, session: AsyncSession = Depends(get_session)):
-    """TEMPORARY, ONE-TIME USE — creates the coreadmin tables and seeds the first
-    admin account, run once against the live DATABASE_URL right after it's
-    provisioned. Token-gated via CORE_ADMIN_SETUP_TOKEN. Delete this route (and
-    unset that env var) once used — do not leave a standing table-creation/seed
-    endpoint in the deployed app."""
-    token = request.headers.get("x-setup-token")
-    if not settings.CORE_ADMIN_SETUP_TOKEN or token != settings.CORE_ADMIN_SETUP_TOKEN:
-        return JSONResponse({"error": "unauthorized"}, status_code=401)
-
-    if _engine is None:
-        return JSONResponse({"error": "not_configured"}, status_code=503)
-
-    async with _engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-    body = await request.json()
-    email = str(body.get("email", "")).strip().lower()
-    password = str(body.get("password", ""))
-    name = str(body.get("name", "Core Admin"))
-    if not email or not password:
-        return JSONResponse({"ok": True, "tablesCreated": True, "adminSeeded": False})
-
-    result = await session.execute(select(CoreAdmin).where(CoreAdmin.email == email))
-    existing = result.scalar_one_or_none()
-    seeded = False
-    if not existing:
-        session.add(CoreAdmin(name=name, email=email, password_hash=hash_password(password)))
-        await session.commit()
-        seeded = True
-
-    return JSONResponse({"ok": True, "tablesCreated": True, "adminSeeded": seeded, "email": email})
 
 
 def _aware(dt: datetime) -> datetime:
@@ -137,12 +100,8 @@ async def login(request: Request, session: AsyncSession = Depends(get_session)):
 
     try:
         await send_coreadmin_otp_email(admin.email, code)
-    except UpstreamError as e:
-        # TEMPORARY debug fallback while diagnosing Resend delivery — never leak
-        # delivery-failure state to the CLIENT (still returns the same generic
-        # response below), but log server-side so the flow can still be verified
-        # end-to-end while the real recipient/domain question gets sorted out.
-        print(f"[coreadmin-otp] Resend delivery failed for {admin.email}: {e}. Code: {code}")
+    except UpstreamError:
+        pass  # never leak delivery-failure state to the client — same reasoning as above
 
     return _generic_response()
 
