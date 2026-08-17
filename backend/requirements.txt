@@ -11,3 +11,8 @@ pydantic==2.10.4
 pydantic-settings==2.7.1
 email-validator==2.2.0
 a2wsgi==1.10.7
+# --- Core admin (synoradigitals.com/coreadmin) ---
+sqlalchemy[asyncio]==2.0.52
+asyncpg==0.31.0
+bcrypt==4.2.1
+PyJWT==2.10.1

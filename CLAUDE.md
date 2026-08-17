@@ -16,6 +16,8 @@ assets/fonts/   ← Quera.otf, Arha Regular.otf
 assets/img/     ← logo/icon SVGs (PNG copies of the logo also exist in assets/img/ but aren't referenced — leftover exports)
 ```
 
+A 6th page, **`coreadmin.html`**, exists alongside these but is deliberately not one of "the five" — it's the internal login for `/coreadmin` (company staff only, `noindex`, not in `sitemap.xml`, not linked from any nav), reusing `shared.css` tokens but with its own minimal page-local styles rather than the marketing-page templates above. Its backend lives in `backend/app/coreadmin/` — see `backend/README.md`'s "Core admin" section for what's built vs. not yet built (auth + OTP only; the actual dashboard content is future work).
+
 Each page keeps a small page-specific `<style>` block in its own `<head>` for layout that doesn't belong in the shared system (e.g. the consultation form styles in `consult.html`). `index.html` and `services.html` each also inline their own `<svg><symbol id="i-*">` icon sprite (duplicated between the two, not deduped) since they're the only pages that render service icons.
 
 ## Color Palette

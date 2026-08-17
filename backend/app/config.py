@@ -11,6 +11,16 @@ class Settings(BaseSettings):
     RESEND_TO: str = "synoradigitals@gmail.com"
     ALLOWED_ORIGIN: str = "http://127.0.0.1:5500"
 
+    # --- Core admin (synoradigitals.com/coreadmin) ---
+    # Left optional (empty-string default) rather than required: this file is
+    # instantiated eagerly at import time, so making these required would crash
+    # the whole app — including the already-working /api/consult endpoint — on
+    # any deployment that hasn't set them yet. The coreadmin router itself checks
+    # for these and returns a clean 503 instead of ever touching an unset value.
+    DATABASE_URL: str = ""
+    CORE_ADMIN_JWT_SECRET: str = ""
+    CORE_ADMIN_OTP_TTL_MINUTES: int = 10
+
     class Config:
         env_file = ".env"
 

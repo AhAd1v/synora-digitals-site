@@ -62,3 +62,28 @@ async def send_consult_email(
         )
     if r.status_code >= 400:
         raise UpstreamError(r.text)
+
+
+async def send_coreadmin_otp_email(to: str, code: str) -> None:
+    """Unlike send_consult_email, this is expected to be awaited with its exception
+    let through (not swallowed) by most callers other than the login route itself —
+    the whole login flow depends on the admin actually receiving this code."""
+    body = {
+        "from": settings.RESEND_FROM,
+        "to": [to],
+        "subject": f"Your Synora core admin login code: {code}",
+        "html": (
+            f"<p>Your one-time verification code is <strong>{code}</strong>.</p>"
+            f"<p>It expires in {settings.CORE_ADMIN_OTP_TTL_MINUTES} minutes and can only be used once.</p>"
+            f"<p>If you didn't request this, someone may have your core admin password — "
+            f"change it immediately.</p>"
+        ),
+    }
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        r = await client.post(
+            RESEND_URL,
+            headers={"Authorization": f"Bearer {settings.RESEND_API_KEY}"},
+            json=body,
+        )
+    if r.status_code >= 400:
+        raise UpstreamError(r.text)

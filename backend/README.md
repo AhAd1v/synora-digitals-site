@@ -71,3 +71,39 @@ web: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers
 4. Rate limit: fire 6 requests in quick succession from the same IP, confirm the 6th returns HTTP 429.
 5. From the actual browser, serve the static site (not `file://`) and submit the real form, including a file attachment, and confirm the success pop-up fires and the email arrives. Then try calling the endpoint from a different origin in the browser console and confirm CORS blocks it.
 6. Only after all of the above pass locally, repeat step 5 against the real deployment. On Path A (Vercel), `consult.html`'s `CONSULT_API_URL` is already a same-origin relative path (`/api/consult`) and needs no change — just update `ALLOWED_ORIGIN` to the deployed domain. On Paths B/C, both `CONSULT_API_URL` and `ALLOWED_ORIGIN` need to point at the real, separately-hosted backend URL.
+
+## Core admin (`/coreadmin`)
+
+Company-only login for `synoradigitals.com/coreadmin`, gated by email OTP. Lives entirely in `app/coreadmin/` — a separate module from the consult form above, sharing only this app's Resend email sending and FastAPI instance.
+
+**What's built:** two-stage login (email+password → 6-digit email code → session), one-time hashed codes with attempt/expiry limits, per-account hourly request caps + resend cooldown (DB-backed, not the in-memory limiter — see the trade-off note above for why that matters more here than for the consult form), a session cookie (httpOnly/Secure/SameSite=Strict, 12h), and an audit log of login/logout events. `coreadmin.html` (project root) is the login page.
+
+**What's NOT built yet:** the actual dashboard content — client registry, session/uptime stats, the "shared data block" telemetry channel described in the original system design. `GET /api/coreadmin/me` (returns the signed-in admin's identity from the session cookie) is the building block for that; the login flow currently just redirects to `/` on success. Treat this as phase 1 (the auth system) — phase 2 is a separate, larger piece of work once there's a real second core admin and an actual client to show data about.
+
+### Setup
+
+1. Create a Neon Postgres project **separate from any client's own database** (blackbuc's included) — core admin's data must never share a database with a client's.
+2. Add `DATABASE_URL` and `CORE_ADMIN_JWT_SECRET` to `.env` (see `.env.example` for the exact format and how to generate the secret).
+3. One-time: create the tables and seed the first admin account —
+   ```bash
+   cd backend
+   SEED_COREADMIN_EMAIL=you@synoradigitals.com SEED_COREADMIN_PASSWORD=... python -m scripts.init_coreadmin_db
+   ```
+   (On Windows PowerShell: `$env:SEED_COREADMIN_EMAIL="..."; $env:SEED_COREADMIN_PASSWORD="..."; python -m scripts.init_coreadmin_db`.)
+4. Visit `/coreadmin`, sign in with those credentials, check email for the code.
+
+### Testing end-to-end
+
+```bash
+curl -i -X POST http://127.0.0.1:8000/api/coreadmin/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"you@synoradigitals.com","password":"..."}'
+```
+Expect `{"ok": true, "message": "If that account exists..."}` regardless of whether the credentials were right — that response is deliberately generic (see `routes.py`'s docstring); check the actual inbox to confirm a code arrived. Then:
+```bash
+curl -i -X POST http://127.0.0.1:8000/api/coreadmin/verify-otp \
+  -H "Content-Type: application/json" \
+  -d '{"email":"you@synoradigitals.com","otp":"123456"}' -c cookies.txt
+curl -i http://127.0.0.1:8000/api/coreadmin/me -b cookies.txt
+```
+Also worth confirming manually: requesting a 6th code within an hour, or one within 60 seconds of the last, both silently no-op (no new email, same generic response) — and entering the wrong code 5 times locks that code out even if the 6th guess would've been correct.

@@ -37,6 +37,7 @@ For details on the color system, responsive sizing, hero animation, and per-page
    - `RESEND_FROM` — `Synora Digitals <onboarding@resend.dev>` until your domain is verified with Resend (see `backend/README.md`)
    - `RESEND_TO` — `synoradigitals@gmail.com`
    - `ALLOWED_ORIGIN` — your Vercel URL for now (e.g. `https://synora-digitals-site.vercel.app`); update to the real domain once step 3 is done
+   - `DATABASE_URL`, `CORE_ADMIN_JWT_SECRET` — only needed once you set up `/coreadmin` (core admin login). Optional otherwise — everything above works fine without them; see `backend/README.md`'s "Core admin" section.
 3. **Deploy.** Vercel gives you a `*.vercel.app` URL immediately — test the consult form there first.
 4. **Connect the Hostinger domain**: Vercel project → Settings → Domains → add your domain. Vercel shows you exactly which DNS records to add. Go to Hostinger → your domain → DNS/Nameservers, and add those records (usually an `A` record for the root domain and a `CNAME` for `www`). This can take up to a few hours to propagate.
 5. Once the custom domain is live, update `ALLOWED_ORIGIN` in Vercel's environment variables to match it exactly (e.g. `https://synoradigitals.com`), and redeploy.

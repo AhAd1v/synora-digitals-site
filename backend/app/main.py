@@ -17,6 +17,8 @@ from .validation import (
 )
 from .email_service import send_consult_email, UpstreamError
 from .schemas import SuccessResponse, ValidationErrorResponse, GenericErrorResponse
+from .coreadmin.db import CoreAdminNotConfigured
+from .coreadmin.routes import router as coreadmin_router
 
 app = FastAPI(title="Synora Digitals — Consult API")
 app.state.limiter = limiter
@@ -33,13 +35,31 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
     )
 
 
+@app.exception_handler(CoreAdminNotConfigured)
+async def coreadmin_not_configured_handler(request: Request, exc: CoreAdminNotConfigured):
+    return JSONResponse(
+        status_code=503,
+        content=GenericErrorResponse(
+            error="not_configured",
+            message="Core admin is not configured on this deployment yet.",
+        ).model_dump(),
+    )
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.ALLOWED_ORIGIN],
-    allow_methods=["POST"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
-    allow_credentials=False,
+    # True (not the consult form's False) — coreadmin's session lives in an httpOnly
+    # cookie, which requires credentialed CORS for local dev where the static page
+    # and the API run on different ports. In production they're same-origin, so this
+    # doesn't change anything for the existing /api/consult endpoint, which never
+    # sends or reads cookies in the first place.
+    allow_credentials=True,
 )
+
+app.include_router(coreadmin_router)
 
 
 @app.post("/api/consult")
