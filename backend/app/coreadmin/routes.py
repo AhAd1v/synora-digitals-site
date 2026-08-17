@@ -137,8 +137,12 @@ async def login(request: Request, session: AsyncSession = Depends(get_session)):
 
     try:
         await send_coreadmin_otp_email(admin.email, code)
-    except UpstreamError:
-        pass  # never leak delivery-failure state to the client — same reasoning as above
+    except UpstreamError as e:
+        # TEMPORARY debug fallback while diagnosing Resend delivery — never leak
+        # delivery-failure state to the CLIENT (still returns the same generic
+        # response below), but log server-side so the flow can still be verified
+        # end-to-end while the real recipient/domain question gets sorted out.
+        print(f"[coreadmin-otp] Resend delivery failed for {admin.email}: {e}. Code: {code}")
 
     return _generic_response()
 
