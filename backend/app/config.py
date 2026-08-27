@@ -7,8 +7,10 @@ class Settings(BaseSettings):
     legitimately differ between dev and production (see README.md)."""
 
     RESEND_API_KEY: str
-    RESEND_FROM: str = "Synora Digitals <onboarding@resend.dev>"
-    RESEND_TO: str = "synoradigitals@gmail.com"
+    # synoradigitals.com is verified in Resend, so mail sends from the real
+    # domain. Production overrides these via Vercel env vars anyway.
+    RESEND_FROM: str = "Synora Digitals <info@synoradigitals.com>"
+    RESEND_TO: str = "info@synoradigitals.com"
     ALLOWED_ORIGIN: str = "http://127.0.0.1:5500"
 
     # --- Core admin (synoradigitals.com/coreadmin) ---
