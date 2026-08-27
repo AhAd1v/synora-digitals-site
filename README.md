@@ -29,17 +29,25 @@ Synora web/
 
 For details on the color system, responsive sizing, hero animation, and per-page content, see **`CLAUDE.md`** — it's kept up to date with the code and is the authoritative reference.
 
-## Deploying (Vercel + a Hostinger domain)
+## Deploying (Vercel)
+
+Live at **synoradigitals.com**, deployed from GitHub `AhAd1v/synora-digitals-site` to a
+Vercel project of the same name. `synoradigitals.com` sits on **Vercel nameservers**
+(managed at the Vercel team level), so subdomains resolve automatically and there is no
+registrar DNS step — `shop.synoradigitals.com` / `app.synoradigitals.com` are handed to
+the separate `synora-shop` project, not this one.
+
+To reproduce from scratch:
 
 1. **Import the repo into Vercel** — [vercel.com](https://vercel.com) → New Project → import `AhAd1v/synora-digitals-site` from GitHub. Vercel auto-detects the static site and `api/index.py`; no build command needed.
 2. **Add environment variables** before the first deploy — Vercel project → Settings → Environment Variables:
    - `RESEND_API_KEY` — from your Resend account
-   - `RESEND_FROM` — `Synora Digitals <onboarding@resend.dev>` until your domain is verified with Resend (see `backend/README.md`)
-   - `RESEND_TO` — `synoradigitals@gmail.com`
+   - `RESEND_FROM` — `Synora Digitals <info@synoradigitals.com>` (the domain is verified in Resend; see `backend/README.md`)
+   - `RESEND_TO` — `info@synoradigitals.com` — where consult submissions land
    - `ALLOWED_ORIGIN` — your Vercel URL for now (e.g. `https://synora-digitals-site.vercel.app`); update to the real domain once step 3 is done
    - `DATABASE_URL`, `CORE_ADMIN_JWT_SECRET` — only needed once you set up `/coreadmin` (core admin login). Optional otherwise — everything above works fine without them; see `backend/README.md`'s "Core admin" section.
 3. **Deploy.** Vercel gives you a `*.vercel.app` URL immediately — test the consult form there first.
-4. **Connect the Hostinger domain**: Vercel project → Settings → Domains → add your domain. Vercel shows you exactly which DNS records to add. Go to Hostinger → your domain → DNS/Nameservers, and add those records (usually an `A` record for the root domain and a `CNAME` for `www`). This can take up to a few hours to propagate.
-5. Once the custom domain is live, update `ALLOWED_ORIGIN` in Vercel's environment variables to match it exactly (e.g. `https://synoradigitals.com`), and redeploy.
+4. **Domain.** `synoradigitals.com` is already on Vercel nameservers, so it only needs to be added under Vercel project → Settings → Domains and it resolves. (On a registrar-managed domain instead, add the `A`/`CNAME` records Vercel shows you and wait for propagation.)
+5. Set `ALLOWED_ORIGIN` in Vercel's environment variables to the live origin (`https://synoradigitals.com`) and redeploy.
 
 Full details, other deployment paths (a generic host like Render/Railway, or cPanel), and local testing steps are in `backend/README.md`.

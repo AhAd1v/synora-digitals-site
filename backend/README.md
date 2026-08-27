@@ -30,6 +30,17 @@ uvicorn app.main:app --reload --port 8000
 
 Resend requires the `RESEND_FROM` address's domain to be verified with SPF/DKIM records in *your* DNS. You cannot set `RESEND_FROM` to `synoradigitals@gmail.com` — Gmail's domain isn't yours to add DNS records to. Until the real domain is registered and added in the Resend dashboard, keep `RESEND_FROM` pointed at the sandbox sender for testing. Once the domain exists, verify it in Resend and switch `RESEND_FROM` to something like `Synora Digitals <consult@synoradigitals.com>`.
 
+**`synoradigitals.com` is now verified in Resend** (as of 2026-08-28), so the
+sandbox sender is no longer in use here. Production sends from and delivers to
+**`info@synoradigitals.com`** — `RESEND_FROM` and `RESEND_TO` are both set to it
+on the `synora-digitals-site` Vercel project, replacing the old
+`synoradigitals@gmail.com`. Replies still go to whoever submitted the form.
+
+**This Resend account is shared** with the SHOP platform (`synora-shop`), which
+sends from `shop@` and `account@` on the same verified domain. Its DKIM selector
+and `send.` SPF/MX records sit alongside this domain's existing iCloud mail, so
+inbound mail is untouched. See `../../MASTER.md` §4 for the full picture.
+
 ## Deploying
 
 Three paths — pick whichever matches the actual hosting decision. The project is currently set up for Path A (Vercel); see the root `README.md` for the exact click-by-click steps.
@@ -82,8 +93,8 @@ Company-only login for `synoradigitals.com/coreadmin`, gated by email OTP. Lives
 
 ### Setup
 
-1. Create a Neon Postgres project **separate from any client's own database** (blackbuc's included) — core admin's data must never share a database with a client's.
-2. Add `DATABASE_URL` and `CORE_ADMIN_JWT_SECRET` to `.env` (see `.env.example` for the exact format and how to generate the secret).
+1. Create a Neon Postgres project **separate from any client's own database** (the Shop platform's included) — core admin's data must never share a database with a client's.
+2. Add `DATABASE_URL` and `CORE_ADMIN_JWT_SECRET` to `.env` (see `.env.example` for the exact format and how to generate the secret). Paste Neon's connection string in as-is — `db.py` strips libpq-style query params (`sslmode`, `channel_binding`) that asyncpg doesn't accept and re-expresses SSL via `connect_args`, so no hand-editing is needed. `CORE_ADMIN_OTP_TTL_MINUTES` is an optional override (default 10).
 3. One-time: create the tables and seed the first admin account —
    ```bash
    cd backend
