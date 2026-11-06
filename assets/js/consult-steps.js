@@ -12,7 +12,8 @@
   var back = form.querySelector(".qf-back");
   var next = form.querySelector(".qf-next");
   var send = form.querySelector(".submit-btn");
-  var at = 0, started = false;
+  var at = 0, started = false, editing = false;
+  var REVIEW = steps.length - 1;
 
   function pad(n) { return (n < 10 ? "0" : "") + n; }
   function val(n) { return (form[n] && form[n].value || "").trim(); }
@@ -50,6 +51,9 @@
     back.hidden = at === 0;
     var last = at === steps.length - 1;
     next.hidden = last; send.hidden = !last;
+    if (last) editing = false;
+    next.textContent = editing ? "Save" : "Continue";
+    if (editing) back.hidden = true;
     personalise();
     if (st.dataset.k === "review") buildReview();
     if (typeof syncFiledropAnts === "function") setTimeout(syncFiledropAnts, 30);
@@ -73,7 +77,12 @@
     return true;
   }
 
-  function go(d) { if (d > 0 && !ok(steps[at])) return; show(at + d, d); }
+  // Editing from the review screen: one step only, then straight back.
+  function go(d) {
+    if (d > 0 && !ok(steps[at])) return;
+    show(editing ? REVIEW : at + d, d);
+  }
+  function edit(i) { editing = i !== REVIEW; show(i, -1); }
   next.addEventListener("click", function () { go(1); });
   back.addEventListener("click", function () { go(-1); });
   form.querySelectorAll("[data-skip]").forEach(function (b) {
@@ -126,20 +135,20 @@
     }).join("");
   }
   form.querySelector(".rev").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-to]"); if (b) show(+b.dataset.to, -1);
+    var b = e.target.closest("[data-to]"); if (b) edit(+b.dataset.to);
   });
 
   // A server-side complaint about a field on an earlier step: go there first.
   var toast = window.showFieldToast;
   window.showFieldToast = function (el, msg) {
     var st = el && el.closest && el.closest(".st");
-    if (st && !st.classList.contains("on")) { show(steps.indexOf(st), -1); setTimeout(function () { toast(el, msg); }, 350); }
+    if (st && !st.classList.contains("on")) { edit(steps.indexOf(st)); setTimeout(function () { toast(el, msg); }, 350); }
     else toast(el, msg);
   };
 
   // Fold the extra answers into the one message the backend reads.
   window.qfSubmit = function (f) {
-    for (var i = 0; i < steps.length - 1; i++) if (!ok(steps[i])) { show(i, -1); return false; }
+    for (var i = 0; i < steps.length - 1; i++) if (!ok(steps[i])) { edit(i); return false; }
     var extra = [];
     if (val("site")) extra.push("Online: " + val("site"));
     if (picked("areas").length) extra.push("Where the week goes: " + picked("areas").join(", "));
@@ -154,6 +163,7 @@
     reset();
     form.querySelectorAll(".chip-q[aria-pressed]").forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
     say.textContent = "";
+    editing = false;
     show(0, -1);
   };
 

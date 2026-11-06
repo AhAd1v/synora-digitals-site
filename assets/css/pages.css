@@ -407,3 +407,13 @@ button.v-btn { border: 0; cursor: pointer; }
 .cform.qf { display: block; max-width: none; min-width: 0; }
 .qf-nav .submit-btn { margin-top: 0; align-self: auto; }
 .qf-nav .v-btn.submit-btn { font-size: var(--fs-ui); padding: max(9px, calc(.9 * var(--u))) max(22px, calc(2.8 * var(--u))); }
+
+/* ── TEAM (about) ── */
+.team {
+  display: grid; grid-template-columns: repeat(4, auto); justify-content: center;
+  gap: max(18px, calc(2 * var(--u))) max(28px, calc(3.6 * var(--u)));
+}
+.team .sign { justify-content: flex-start; }
+@media (orientation: portrait), (max-width: 700px) {
+  .team { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 26rem; margin: 0 auto; }
+}
