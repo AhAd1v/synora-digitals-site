@@ -4,18 +4,23 @@ Marketing website for Synora Digitals, an AI automation company.
 
 ## Stack
 
-Five static HTML pages sharing one stylesheet (`shared.css`) and one script (`assets/js/shared.js`) — zero build step for the site itself. The consultation form is handled by a small Python (FastAPI) backend in `backend/`, deployed alongside the static site as a Vercel serverless function.
+Five static HTML pages sharing one stylesheet (`shared.css`) and one script (`assets/js/shared.js`); the four inner pages add `assets/css/pages.css` + `assets/js/pages.js`, and the consult page its stepped form, `assets/js/consult-steps.js` — zero build step for the site itself. The consultation form is handled by a small Python (FastAPI) backend in `backend/`, deployed alongside the static site as a Vercel serverless function.
 
 ## Files
 
 ```
-Synora web/
+SD/  (repo AhAd1v/synora-digitals-site)
 ├── index.html, services.html, consult.html, policies.html, about.html   ← the 5 pages
+├── coreadmin.html                ← internal staff login for /coreadmin (noindex, not linked)
 ├── shared.css                    ← design tokens, nav, footer, shared layout system
 ├── assets/
 │   ├── fonts/                     ← Quera.otf, Arha Regular.otf (required, loaded by shared.css)
 │   ├── img/                        ← logo, icon, favicon SVGs/PNGs
-│   └── js/shared.js                ← toggleDark() / mobile menu / hover-sweep sizing
+│   ├── css/pages.css               ← inner pages (services, consult, policies, about) — redesigned 6 Nov 2026
+│   └── js/
+│       ├── shared.js               ← toggleDark() / mobile menu / hover-sweep sizing
+│       ├── pages.js                ← inner pages: service-row accordion, the switch (Monday toggle, policy tabs)
+│       └── consult-steps.js        ← the consult form, one question per screen
 ├── robots.txt, sitemap.xml, site.webmanifest   ← SEO/PWA infrastructure
 ├── api/index.py                  ← Vercel's entry point — imports the real app from backend/
 ├── requirements.txt              ← Vercel-specific deps for api/index.py (see its own comment)
@@ -34,8 +39,8 @@ For details on the color system, responsive sizing, hero animation, and per-page
 Live at **synoradigitals.com**, deployed from GitHub `AhAd1v/synora-digitals-site` to a
 Vercel project of the same name. `synoradigitals.com` sits on **Vercel nameservers**
 (managed at the Vercel team level), so subdomains resolve automatically and there is no
-registrar DNS step — `shop.synoradigitals.com` / `app.synoradigitals.com` are handed to
-the separate `synora-shop` project, not this one.
+registrar DNS step — `app.synoradigitals.com` (and the retired `shop.`, which redirects
+there) belongs to the separate `synora-shop` project, not this one.
 
 To reproduce from scratch:
 

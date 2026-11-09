@@ -2,23 +2,26 @@
 
 ## What this is
 Marketing website for Synora Digitals, an AI automation company.
-Five static pages sharing one stylesheet and one script file — no build step, no framework, no npm dependencies:
+Five static pages — no build step, no framework, no npm dependencies. The inner four were redesigned on 6 November 2026 (shorter copy, the homepage's own look carried inward) and share a second stylesheet and script on top of the shared ones:
 
 ```
-index.html      ← homepage (hero, services accordion, CTA)
-services.html   ← full services list + industries + popular requests
-consult.html    ← consultation form + process steps
-policies.html   ← data & security / privacy policy / service terms (one page, three sections)
-about.html      ← studio bio + why-work-with-us + status
-shared.css      ← tokens, nav, footer, page-card, zig-zag separator, content-page (.pg/.icard/.grid2/...) system
-assets/js/shared.js ← toggleDark() / openMenu() / closeMenu() / maskClick(), used by every page
+index.html      ← homepage (hero, services accordion, CTA) — untouched by the redesign
+services.html   ← six service rows (accordion) + "Your Monday, before and after" toggle + CTA
+consult.html    ← the consultation form, one question per screen (7 steps) + "What happens next"
+policies.html   ← "never" chips + three tabs: Your data / This website / Working together
+about.html      ← facts strip + "How we work" (5 principles) + the team + CTA
+shared.css      ← tokens, nav, footer, page-card, zig-zag separator (+ the old .pg/.icard content-page system, no longer used by any page)
+assets/css/pages.css        ← the inner pages' system: .v-hero, .v-sec, .svc-list, .mon, .seg, .v-cta, .v-steps, .facts, .prin, .team/.sign, .never, .tabs, the stepped form (.qf, .st, .chip-q, .rev)
+assets/js/shared.js         ← toggleDark() / openMenu() / closeMenu() / maskClick(), used by every page
+assets/js/pages.js          ← inner pages: service-row accordion, the .seg knob switch (Monday toggle, policy tabs)
+assets/js/consult-steps.js  ← consult only: the stepped form (see Content Pages)
 assets/fonts/   ← Quera.otf, Arha Regular.otf
 assets/img/     ← logo/icon SVGs (PNG copies of the logo also exist in assets/img/ but aren't referenced — leftover exports)
 ```
 
 A 6th page, **`coreadmin.html`**, exists alongside these but is deliberately not one of "the five" — it's the internal login for `/coreadmin` (company staff only, `noindex`, not in `sitemap.xml`, not linked from any nav), reusing `shared.css` tokens but with its own minimal page-local styles rather than the marketing-page templates above. Its backend lives in `backend/app/coreadmin/` — see `backend/README.md`'s "Core admin" section for what's built vs. not yet built (auth + OTP only; the actual dashboard content is future work).
 
-Each page keeps a small page-specific `<style>` block in its own `<head>` for layout that doesn't belong in the shared system (e.g. the consultation form styles in `consult.html`). `index.html` and `services.html` each also inline their own `<svg><symbol id="i-*">` icon sprite (duplicated between the two, not deduped) since they're the only pages that render service icons.
+Each page keeps a small page-specific `<style>` block in its own `<head>` (e.g. the original consultation-form, file-drop, toast and modal styles in `consult.html`, which the stepped form still uses). Every page inlines the same `<svg><symbol id="i-*">` icon sprite as `index.html` (copied, not deduped), so any page can use the service icons.
 
 ## Color Palette
 
@@ -89,19 +92,19 @@ Every page shares this skeleton (`body` background is `--header-bg`, the full ba
 <section.cta-sec #contact>          ← get-in-touch icon + heading + pill → consult.html
 ```
 
-**`services.html` / `consult.html` / `policies.html` / `about.html`** (content-page template) inside `.page-card`:
+**`services.html` / `consult.html` / `policies.html` / `about.html`** (inner-page template, `assets/css/pages.css`) inside `.page-card`:
 ```
-<div.page-head>                     ← centered h1 + .pg-sub intro paragraph
-<div.pg><section.pg-sec>...</div>   ← one or more content blocks (repeated)
-<div.sep>                           ← zig-zag separator between each .pg block
+<header.v-hero>                     ← h1 (second line in .ac accent) + one short <p>   (consult has none: the form's first question is its h1)
+<section.v-sec><div.v-wrap>...      ← one block per idea (repeated)
+<div.sep>                           ← zig-zag separator between blocks
 ...
-<div.pg-cta>                        ← closing "Book a consultation" / "Email us" prompt
+<section.v-cta>                     ← closing heading + .v-btn.solid "Book a free consultation" (+ a plain .v-btn)
 ```
-Content blocks use the shared `.grid2`/`.icard`/`.icap`/`.plist`/`.chips`/`.steps` system from `shared.css` — see each page for which pattern it uses (card grids on services/policies/about, numbered `.steps` + a `<form class="cform">` on consult).
+`.v-hero + .v-sec` has no top padding so the first block sits under the heading. The old `.page-head`/`.pg`/`.icard` classes in `shared.css` are no longer used by any page. Writing rule for these pages: short and specific — no paragraph that doesn't earn its place.
 
 ## Nav Header
 
-- Pages: index, services, consult, policies, about (5 total). `policies.html` is a single page holding three sections — a data/security card grid (untitled `h1`, "Our Policies"), "Privacy Policy", and "Service Terms" — there are no separate `privacy-policy.html` / `service-terms.html` files. Sub-pages swap their own pill for an inverted `[Home]` pill.
+- Pages: index, services, consult, policies, about (5 total). `policies.html` is a single page holding data, website-privacy and service terms as three tabs — there are no separate `privacy-policy.html` / `service-terms.html` files. Sub-pages swap their own pill for an inverted `[Home]` pill.
 - Desktop: `[Services][Consult]` · logo (absolute center) · `[Policies][About][🌙]`
 - Mobile: `[☰]` · logo (absolute center, same as desktop) · `[🌙]`
 - Logo uses `position:absolute; left:50%; transform:translateX(-50%)` on **both** breakpoints — never reverts to static
@@ -168,14 +171,25 @@ Every `#6666ff`/`var(--phrase)` element is animated (implemented in `shared.css`
 
 ## Content Pages
 
-Each uses the shared `.page-head` + `.pg`/`.sep`-repeating + `.pg-cta` template (see Layout Structure).
+All four use the inner-page template above (`pages.css` + `pages.js`). Copy is deliberately short; keep it that way.
 
-- **`services.html`** — h1 "Our Services". Sections: full 6-card `.icard`/`.icap` grid (same 6 categories as the homepage accordion, each with a `.plist` of 5 bullet points) → "Popular automation requests" (`.chips`, 12 items) → "Industries we serve" (`.chips`, 8 items) → CTA "Book a consultation".
-- **`consult.html`** — h1 "Book a Consultation". Sections: `<form class="cform">` (name/business/email/phone/message, submits via `sendConsult()` to a FormSubmit.co AJAX endpoint with IP/country/timezone lookup, falls back to a `mailto:` draft if the relay fails) → "What happens after you send it" (5-step `.steps` list) → 2-card `.icard` grid ("About pricing", "Who you'll talk to") → CTA "Email us directly" (`mailto:synoradigitals@gmail.com`).
-- **`policies.html`** — h1 "Our Policies". Three sections in one page: a 7-card `.icard` grid (data collection, access, storage, "what we never do", fine-tuning, NDA, compliance — the former "When we part ways" offboarding/handover card was removed deliberately: service model doesn't promise clients keep the build) → "Privacy Policy" (4-card grid) → "Service Terms" (6-card grid) → CTA "Book a consultation".
-- **`about.html`** — h1 "About Synora Digitals". Sections: `.about-lead` intro paragraphs (page-local class, styled in an inline `<style>` block) → "Why work with us" (6-card `.icard` grid) → "Where we are today" (single `.about-lead` paragraph) → CTA "Book a consultation".
+- **`services.html`** — h1 "Six kinds of busywork. / Handled for you." Six `.svc-r` rows (Communication, Sales, Admin, Operations, Marketing, AI — icon + name + one line; one open at a time, the open one shows its examples as chips) → "Your Monday, before and after." (`.mon`: five tasks with times; the `.seg` switch flips "By hand" ↔ "With Synora", striking the tasks and swapping the total 3 h 20 min → 10 min; the times are illustrative) → CTA "Not sure which one is yours?"
+- **`consult.html`** — the form, one question per screen (`form.cform.qf`, driven by `assets/js/consult-steps.js`), then "What happens next" (3 `.v-steps`: a call → a fixed proposal → built, then live). The seven steps (`.st[data-k]`):
+  1. `name` — "Hi. Who's on the other side?" (required)
+  2. `biz` — "Nice to meet you, {first name}. What's the business called?" — skip chip "It's just me for now"
+  3. `site` — "Can we take a look at {business} online?" — skip chip "Not online yet"
+  4. `areas` — "Where does the week go?" multi-select chips + hours-a-week single chips; a live line does the sum ("about N hours a month", hours × 4.3)
+  5. `task` — "Which task would you happily never do again?" textarea (required) + the original file drop (≤ 4 MB, PDF/Word/Excel/CSV/text)
+  6. `contact` — "Where should we reply?" email (required) + optional phone with country code (default +353)
+  7. `review` — every answer with an Edit button; Edit opens just that step (Continue reads "Save") and returns straight to the review. Submit is "Send it over".
 
-Several `<span class="tbd">[...]</span>` placeholders remain across these pages (founder/year/location on `about.html`, jurisdiction/notice-period on `policies.html`, reply time on `consult.html`) marking real content that still needs to be filled in.
+  Progress is the zig-zag wave filling with accent (`.qf-wave`, `--p`) and an "NN / 07" counter. Enter continues (⌘/Ctrl+Enter in the textarea). Each step is checked on Continue with the page's original validators (`looksLikeRealName`, `looksLikeValidEmail`, `looksLikeValidPhone`, `showFieldToast`); the final send still goes through the original `sendConsult()`/`doSend()` unchanged (all checks again, "no file attached?" confirm, 10 s timeout, server field errors, success popup + reset). A server error about an earlier step opens that step in Save mode.
+
+  **Backend contract is unchanged** (`/api/consult`: name, business, email, country_code, phone, message, client_time, website, attachment). The extra answers are folded into `message` under the task text: `—` / `Online: …` / `Where the week goes: …` / `Hours a week: …`. **Never name a form field `website`** — that name is the honeypot; the site question uses `site`, and the hidden textarea `msg` carries the composed message.
+- **`policies.html`** — h1 "Your data, in plain words." A `.never` strip (never sold / never used to train models / never reused across clients / never kept in plain text) → `.tabs` with three panels of short Q&A (`.qa`): Your data (collection, access, storage, testing, NDA, privacy law) · This website (cookies, the consultation form, how we use it, your rights) · Working together (scope and price, your part, ownership, third-party tools, fixes, ending). Fine print: "The proposal you sign is the binding document. Last updated November 2026." → CTA.
+- **`about.html`** — h1 "We don't sell AI. / We sell your hours back." `.facts` (2026 founded · PK · IE · 0 middlemen) → "How we work" (5 numbered `.prin` principles) → a short line + the team (`.team` of `.sign`: Abdul Ahad — Founder; Hassan, Fahad Sheikh, Ansab Rehman — Co-founders; initials avatars, no personal emails — info@ is a general inbox) → CTA.
+
+No `[tbd]` placeholders remain on these pages.
 
 ## Mobile Menu
 

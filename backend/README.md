@@ -36,7 +36,7 @@ sandbox sender is no longer in use here. Production sends from and delivers to
 on the `synora-digitals-site` Vercel project, replacing the old
 `synoradigitals@gmail.com`. Replies still go to whoever submitted the form.
 
-**This Resend account is shared** with the SHOP platform (`synora-shop`), which
+**This Resend account is shared** with the APP platform (Vercel project `synora-shop`, app.synoradigitals.com), which
 sends from `shop@` and `account@` on the same verified domain. Its DKIM selector
 and `send.` SPF/MX records sit alongside this domain's existing iCloud mail, so
 inbound mail is untouched. See `../../MASTER.md` §4 for the full picture.
