@@ -180,7 +180,7 @@ All four use the inner-page template above (`pages.css` + `pages.js`). Copy is d
   3. `site` — "Can we take a look at {business} online?" — skip chip "Not online yet"
   4. `areas` — "Where does the week go?" multi-select chips + hours-a-week single chips; a live line does the sum ("about N hours a month", hours × 4.3)
   5. `task` — "Which task would you happily never do again?" textarea (required) + the original file drop (≤ 4 MB, PDF/Word/Excel/CSV/text)
-  6. `contact` — "Where should we reply?" email (required) + optional phone with country code (default +353)
+  6. `contact` — "Where should we reply?" email (required) + optional phone with country code (default +1 US, listed first; Synora targets the US since 18 Nov 2026, no office claims anywhere)
   7. `review` — every answer with an Edit button; Edit opens just that step (Continue reads "Save") and returns straight to the review. Submit is "Send it over".
 
   Progress is the zig-zag wave filling with accent (`.qf-wave`, `--p`) and an "NN / 07" counter. Enter continues (⌘/Ctrl+Enter in the textarea). Each step is checked on Continue with the page's original validators (`looksLikeRealName`, `looksLikeValidEmail`, `looksLikeValidPhone`, `showFieldToast`); the final send still goes through the original `sendConsult()`/`doSend()` unchanged (all checks again, "no file attached?" confirm, 10 s timeout, server field errors, success popup + reset). A server error about an earlier step opens that step in Save mode.

@@ -92,13 +92,18 @@
     });
   });
 
-  // Enter moves on; in the task box it needs Cmd/Ctrl.
-  form.addEventListener("keydown", function (e) {
-    if (e.key !== "Enter" || e.isComposing) return;
-    var t = e.target;
+  // Enter moves on, wherever the focus is while the form is on screen: in a
+  // field, on a chip (Space still toggles chips), or nowhere at all. In the
+  // task box it needs Cmd/Ctrl, so Enter can still start a new line there.
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" || e.isComposing || e.altKey || e.shiftKey || e.defaultPrevented) return;
+    var t = e.target, inForm = form.contains(t);
     if (t.tagName === "TEXTAREA" && !(e.metaKey || e.ctrlKey)) return;
-    if (t.tagName === "BUTTON" && t.type !== "submit" && !t.classList.contains("chip-q")) return;
-    if (t.classList.contains("chip-q")) return;
+    if (t.tagName === "SELECT") return;
+    if (inForm && (t === back || t === next || t === send || t.closest(".rev") || t.closest(".filepick, .filedrop"))) return;  // these buttons do their own thing
+    if (!inForm && t !== document.body && t.closest("a, button, input, textarea, select, [contenteditable]")) return;  // nav, menus, etc.
+    var r = form.getBoundingClientRect();
+    if (r.bottom < 80 || r.top > innerHeight - 80) return;   // the form isn't on screen
     e.preventDefault();
     if (at === steps.length - 1) send.click(); else go(1);
   });
