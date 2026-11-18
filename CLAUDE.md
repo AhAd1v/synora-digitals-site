@@ -169,6 +169,12 @@ Icons: inlined as `<symbol id="i-*">` sprites with tokenized fills (`currentColo
 
 Every `#6666ff`/`var(--phrase)` element is animated (implemented in `shared.css`): `.plist li::before` markers and `.step-n` digits breathe (opacity pulse, staggered per list item / step via `nth-child` delays); `.icap svg` icons pop on card hover/active; `.alink` text links grow an underline on hover.
 
+## Wording rules (since 18–19 Nov 2026)
+
+- **No location anywhere.** No country, city, office or "based in" claim on any page, meta tag or doc meant for the public. Synora's main market is now the US (it was Ireland), but the site names no target country, like most agencies. The only trace is the phone code defaulting to +1.
+- **US English** (organize, optimize, color). Privacy wording names no specific law (no GDPR): "we follow the privacy laws that apply to your business".
+- Footers read **© 2026** (founded 2026).
+
 ## Content Pages
 
 All four use the inner-page template above (`pages.css` + `pages.js`). Copy is deliberately short; keep it that way.
@@ -180,14 +186,14 @@ All four use the inner-page template above (`pages.css` + `pages.js`). Copy is d
   3. `site` — "Can we take a look at {business} online?" — skip chip "Not online yet"
   4. `areas` — "Where does the week go?" multi-select chips + hours-a-week single chips; a live line does the sum ("about N hours a month", hours × 4.3)
   5. `task` — "Which task would you happily never do again?" textarea (required) + the original file drop (≤ 4 MB, PDF/Word/Excel/CSV/text)
-  6. `contact` — "Where should we reply?" email (required) + optional phone with country code (default +1 US, listed first; Synora targets the US since 18 Nov 2026, no office claims anywhere)
+  6. `contact` — "Where should we reply?" email (required) + optional phone with country code (default 🇺🇸 +1, listed first; the backend accepts every listed code)
   7. `review` — every answer with an Edit button; Edit opens just that step (Continue reads "Save") and returns straight to the review. Submit is "Send it over".
 
-  Progress is the zig-zag wave filling with accent (`.qf-wave`, `--p`) and an "NN / 07" counter. Enter continues (⌘/Ctrl+Enter in the textarea). Each step is checked on Continue with the page's original validators (`looksLikeRealName`, `looksLikeValidEmail`, `looksLikeValidPhone`, `showFieldToast`); the final send still goes through the original `sendConsult()`/`doSend()` unchanged (all checks again, "no file attached?" confirm, 10 s timeout, server field errors, success popup + reset). A server error about an earlier step opens that step in Save mode.
+  Progress is the zig-zag wave filling with accent (`.qf-wave`, `--p`) and an "NN / 07" counter. Enter continues from anywhere while the form is on screen — a text field, a chip (Space still toggles chips), or nothing focused — except ⌘/Ctrl+Enter in the textarea, and not when the focus is on Back/Continue/Send, an Edit button, the file picker or the country select (`document` keydown in `consult-steps.js`, fixed 18 Nov 2026). Each step is checked on Continue with the page's original validators (`looksLikeRealName`, `looksLikeValidEmail`, `looksLikeValidPhone`, `showFieldToast`); the final send still goes through the original `sendConsult()`/`doSend()` unchanged (all checks again, "no file attached?" confirm, 10 s timeout, server field errors, success popup + reset). A server error about an earlier step opens that step in Save mode.
 
   **Backend contract is unchanged** (`/api/consult`: name, business, email, country_code, phone, message, client_time, website, attachment). The extra answers are folded into `message` under the task text: `—` / `Online: …` / `Where the week goes: …` / `Hours a week: …`. **Never name a form field `website`** — that name is the honeypot; the site question uses `site`, and the hidden textarea `msg` carries the composed message.
 - **`policies.html`** — h1 "Your data, in plain words." A `.never` strip (never sold / never used to train models / never reused across clients / never kept in plain text) → `.tabs` with three panels of short Q&A (`.qa`): Your data (collection, access, storage, testing, NDA, privacy law) · This website (cookies, the consultation form, how we use it, your rights) · Working together (scope and price, your part, ownership, third-party tools, fixes, ending). Fine print: "The proposal you sign is the binding document. Last updated November 2026." → CTA.
-- **`about.html`** — h1 "We don't sell AI. / We sell your hours back." `.facts` (2026 founded · PK · IE · 0 middlemen) → "How we work" (5 numbered `.prin` principles) → a short line + the team (`.team` of `.sign`: Abdul Ahad — Founder; Hassan, Fahad Sheikh, Ansab Rehman — Co-founders; initials avatars, no personal emails — info@ is a general inbox) → CTA.
+- **`about.html`** — h1 "We don't sell AI. / We sell your hours back." `.facts` (2026 founded · 24h a real person replies · 0 middlemen) → "How we work" (5 numbered `.prin` principles) → a short line + the team (`.team` of `.sign`: Abdul Ahad — Founder; Hassan, Fahad Sheikh, Ansab Rehman — Co-founders; initials avatars, no personal emails — info@ is a general inbox) → CTA.
 
 No `[tbd]` placeholders remain on these pages.
 
